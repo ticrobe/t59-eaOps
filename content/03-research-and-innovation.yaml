@@ -1,0 +1,88 @@
+title: Research & Innovation
+intro: >-
+  Op 3 is a single function, **3.1 Research & Innovation**, deliberately scoped as a watch-list rather
+  than a roadmap commitment — Tech Radar and Innovation Pipeline tracking, plus emerging/speculative
+  items (Quantum AI, Post-Quantum Cryptography, Organoid AI, Self-Hosted GPU Infrastructure,
+  Multi-Provider AI Redundancy) that are being monitored, not built, alongside ongoing vendor, role,
+  and AI/ML research trend tracking.
+functions:
+  - title: Research & Innovation
+    parameters:
+      - title: Tech Radar
+        all: ThoughtWorks-style radar — adopt/trial/assess/hold per technology
+      - title: Innovation Pipeline
+        all: Spike → PoC → Placeholder → In Scope
+      - title: Quantum AI
+        azure: Quantum-accelerated optimization/ML, monitored via Tech Radar, no near-term Azure roadmap
+        gcp: Quantum-accelerated optimization/ML, monitored via Tech Radar, no near-term GCP roadmap
+        aws: Quantum-accelerated optimization/ML, monitored via Tech Radar, no near-term AWS roadmap
+        oss: >-
+          Quantum-accelerated optimization/ML via open-source SDKs (Qiskit, PennyLane), monitored via
+          Tech Radar, no near-term roadmap
+      - title: Post-Quantum Cryptography (PQC)
+        azure: NIST-standardized quantum-resistant algorithms, migration planning ahead of quantum threat
+        gcp: NIST-standardized quantum-resistant algorithms, migration planning ahead of quantum threat
+        aws: NIST-standardized quantum-resistant algorithms, migration planning ahead of quantum threat
+        oss: >-
+          NIST-standardized quantum-resistant algorithms via liboqs / Open Quantum Safe (open-source),
+          migration planning ahead of quantum threat
+      - title: Organoid AI
+        all: Biological/neuromorphic computing research, monitored via Tech Radar, pre-commercial
+      - title: Self-Hosted GPU Infrastructure
+        azure: >-
+          Own GPU compute (AKS GPU node pools) for open-weight/SLM models — only if self-hosting
+          replaces Azure OpenAI, monitored via Tech Radar — itself a Build vs. Buy Analysis decision
+          applied to infrastructure (own hardware vs. managed AI API). Exception to this document's
+          serverless-first stance: GPU workloads need node-level hardware access; serverless GPU
+          support (Cloud Run, Container Apps) is still limited/immature as of this writing.
+        gcp: >-
+          Own GPU compute (GKE GPU node pools) for open-weight/SLM models — only if self-hosting
+          replaces Vertex AI, monitored via Tech Radar — itself a Build vs. Buy Analysis decision
+          applied to infrastructure (own hardware vs. managed AI API). Exception to this document's
+          serverless-first stance: GPU workloads need node-level hardware access; serverless GPU
+          support (Cloud Run, Container Apps) is still limited/immature as of this writing.
+        aws: >-
+          Own GPU compute (EKS GPU node pools) for open-weight/SLM models — only if self-hosting
+          replaces Amazon Bedrock, monitored via Tech Radar — itself a Build vs. Buy Analysis decision
+          applied to infrastructure (own hardware vs. managed AI API). Exception to this document's
+          serverless-first stance: GPU workloads need node-level hardware access; serverless GPU
+          support (Cloud Run, Container Apps) is still limited/immature as of this writing.
+        oss: >-
+          Own GPU compute (Kubernetes GPU node pools, on-prem or bare-metal) for open-weight/SLM
+          models — only if self-hosting replaces managed AI APIs, monitored via Tech Radar — itself a
+          Build vs. Buy Analysis decision applied to infrastructure (own hardware vs. managed AI API).
+          Exception to this document's serverless-first stance: GPU workloads need node-level hardware
+          access; serverless GPU support (Cloud Run, Container Apps) is still limited/immature as of
+          this writing.
+      - title: Multi-Provider AI Redundancy
+        azure: >-
+          Fallback to Google Vertex AI / Amazon Bedrock if Azure OpenAI has an outage or model
+          deprecation — watch-list item for cross-cloud AI resilience
+        gcp: >-
+          Fallback to Azure OpenAI / Amazon Bedrock if Vertex AI has an outage or model deprecation —
+          watch-list item for cross-cloud AI resilience
+        aws: >-
+          Fallback to Azure OpenAI / Google Vertex AI if Amazon Bedrock has an outage or model
+          deprecation — watch-list item for cross-cloud AI resilience
+        oss: >-
+          Fallback to self-hosted open-weight models (Llama, Mistral via vLLM/Ollama) if a managed
+          provider has an outage — watch-list
+      - title: Vendor & Industry Trend Monitoring
+        all: >-
+          Track roadmaps, EOL/deprecation notices, and major announcements from Microsoft, Google, and
+          Amazon (Ignite, Google Cloud Next, re:Invent) plus broader IT industry trends (Gartner,
+          Forrester, ThoughtWorks) — primary input feeding the Tech Radar and Innovation Pipeline
+      - title: Emerging Role & Delivery Model Trends
+        all: >-
+          Track evolving role and delivery models — Forward-Deployed Engineer/Architect/Tester/PM/BA
+          (embedding technical staff directly with clients to customize and deploy), and
+          individual-contributor career-track trends (Staff/Principal IC ladders, AI-augmented IC
+          roles) — monitored via Tech Radar, informs how service engagements (SOW-based work) get
+          staffed
+      - title: AI/ML Research Paper Tracking
+        all: >-
+          Monitor arXiv preprints and top-tier venues (NeurIPS, ICML, ACL, CVPR) plus frontier lab
+          publications (OpenAI, Anthropic, DeepMind, Google Research, Meta AI, Microsoft Research) —
+          surfaces breakthroughs (new architectures, training methods, safety techniques) before they
+          reach vendor roadmaps; feeds the Tech Radar and Innovation Pipeline alongside Vendor &
+          Industry Trend Monitoring

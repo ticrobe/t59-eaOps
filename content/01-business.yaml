@@ -1,0 +1,82 @@
+title: Business
+intro: >-
+  Op 1 covers the business case for CPO before any architecture gets built. **1.1 Business
+  Architecture** is the financial and contractual foundation — ROI/TCO modeling, build-vs-buy
+  analysis, pricing and SLA definitions, error budgets, and the outsourced-engagement artifacts (SOW,
+  Engagement Billing Model) that apply when the work is contracted out. **1.2 FinOps & Cost
+  Optimization** is the ongoing cost discipline once it's built — cloud cost dashboards, IaC cost
+  estimation, reserved capacity, AI token spend tracking, and the FinOps practice that ties it
+  together.
+functions:
+  - title: Business Architecture
+    parameters:
+      - title: Business Case
+        all: Formal doc — problem statement, solution options, recommendation
+      - title: ROI Model
+        all: Expected returns vs investment — revenue, cost savings, productivity gains
+      - title: TCO Model
+        all: Total Cost of Ownership — cloud, licenses, people, ops over 3-5 years
+      - title: Build vs. Buy Analysis
+        all: >-
+          Framework for in-house development vs. licensing/vendor solutions — weighs cost,
+          time-to-market, control, and vendor lock-in
+      - title: Pricing Tiers
+        all: Freemium / Pro / Enterprise tier definitions with feature gates
+      - title: SLA Definitions
+        all: Uptime commitments per tier — 99.9% vs 99.95% vs 99.99%
+      - title: SLO / SLI
+        all: Internal service objectives and indicators feeding the SLA
+      - title: Error Budget
+        all: Allowed downtime per SLO period — guides release pace
+      - title: Chargeback Model
+        azure: Which team/dept pays for which Azure resource consumption
+        gcp: Which team/dept pays for which GCP resource consumption
+        aws: Which team/dept pays for which AWS resource consumption
+        oss: Which team/dept pays for which cloud/infra resource consumption
+      - title: Cost per Transaction
+        all: Unit economics — cost per API call, per AI token, per customer
+      - title: Statement of Work (SOW)
+        all: >-
+          Applies to outsourced/vendor-built engagements only — formal scope, deliverables,
+          milestones, and acceptance criteria for a third-party delivery contract. In-house builds use
+          Build vs. Buy Analysis, Sprint/Backlog, ADRs and ARB instead — no SOW needed.
+      - title: Engagement Billing Model
+        all: >-
+          Applies to outsourced/vendor engagements only (CPO paying a vendor to build, or CPO billing
+          its own clients for delivered services) — Time & Materials vs Fixed-Price vs Retainer
+          billing structure. In-house work has no external bill — cost is tracked internally via
+          Chargeback Model instead.
+  - title: FinOps & Cost Optimization
+    parameters:
+      - title: Cloud Cost Dashboard
+        azure: Azure Cost Management — tagging, budgets, spend reports per service
+        gcp: Google Cloud Billing Reports — tagging, budgets, spend reports per service
+        aws: AWS Cost Explorer — tagging, budgets, spend reports per service
+        oss: OpenCost / Kubecost (open-source) — tagging, budgets, spend reports per service
+      - title: IaC Cost Estimation
+        all: Infracost — shows Terraform cost diff on every PR before apply
+      - title: Advisor Recommendations
+        azure: Azure Advisor — right-size nodes, reserved instances, idle resource alerts
+        gcp: Active Assist Recommender — right-size nodes, committed use discounts, idle resource alerts
+        aws: AWS Trusted Advisor — right-size nodes, reserved instances, idle resource alerts
+        oss: Kubecost / OpenCost — right-size nodes, idle resource alerts (open-source, cloud-agnostic)
+      - title: Reserved Instances
+        azure: >-
+          Azure Savings Plans — commit 1-3 years on Container Apps/serverless compute + SQL to cut
+          cost 40-60%; AKS node Reservations only if self-managing Kubernetes (6.10.2 secondary path)
+        gcp: >-
+          Committed Use Discounts — commit 1-3 years on Cloud Run/serverless compute + BigQuery to cut
+          cost 40-60%; GKE node CUDs only if self-managing Kubernetes (6.10.2 secondary path)
+        aws: >-
+          Compute Savings Plans — commit 1-3 years on Fargate/serverless compute + RDS to cut cost
+          40-60%; EKS node Reserved Instances only if self-managing Kubernetes (6.10.2 secondary path)
+        oss: >-
+          Committed-use discounts — commit 1-3 years on compute/DB nodes to cut cost 40-60%
+          (cloud-agnostic billing construct)
+      - title: AI Cost Tracking
+        azure: Per-feature token usage + budget alerts on Azure OpenAI
+        gcp: Per-feature token usage + budget alerts on Vertex AI (Gemini models)
+        aws: Per-feature token usage + budget alerts on Amazon Bedrock
+        oss: Per-feature token usage + budget alerts via LiteLLM / Langfuse (open-source LLM usage tracking)
+      - title: FinOps Practice
+        all: FinOps Foundation framework — shared accountability for cloud spend

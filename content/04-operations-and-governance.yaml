@@ -1,0 +1,194 @@
+title: Operations & Governance
+intro: >-
+  Op 4 is how CPO stays reliable and disciplined once it's running. **4.1 SRE & Operations** is the
+  reliability operating model — SLOs/error budgets, incident response, on-call, postmortems, DR
+  testing, and capacity planning, plus the runbook for executing outsourced/client engagements
+  themselves. **4.2 Architecture Governance** is the decision-making discipline — C4 diagrams, ADRs,
+  coding/design standards, API and UI/DB design guidelines, and the Architecture Review Board gate
+  that also covers vendor-proposed technology in outsourced work. **4.3 Change & Release Management**
+  is how changes actually ship — release calendars, canary/blue-green rollout, the Change Advisory
+  Board, and Definition of Done/Ready. **4.4 Migration & Upgrade Management** is planned technical
+  change — schema migrations, framework upgrades, API deprecation, and cloud migration strategy (the 7
+  Rs).
+functions:
+  - title: SRE & Operations
+    parameters:
+      - title: SLO Dashboard
+        azure: Live SLO/SLI tracking — availability, latency, error rate
+        gcp: Live SLO/SLI tracking — availability, latency, error rate
+        aws: Live SLO/SLI tracking — availability, latency, error rate
+        oss: Grafana + Prometheus — availability, latency, error rate
+      - title: Status Page
+        azure: Statuspage.io / Azure Service Health — public uptime visibility
+        gcp: Statuspage.io / Google Cloud Service Health — public uptime visibility
+        aws: Statuspage.io / AWS Service Health Dashboard — public uptime visibility
+        oss: Cachet / Gatus (open-source) — public uptime visibility
+      - title: Incident Response Playbook
+        all: Step-by-step runbook for each failure scenario
+      - title: On-call Runbooks
+        all: Per-service operational runbooks for on-call engineers
+      - title: On-call Rotation
+        azure: PagerDuty rotation schedule — who is on-call and when
+        gcp: PagerDuty rotation schedule — who is on-call and when
+        aws: PagerDuty rotation schedule — who is on-call and when
+        oss: Grafana OnCall (open-source) rotation schedule — who is on-call and when
+      - title: Postmortem Process
+        all: Blameless postmortem template and review cadence
+      - title: DR Test Schedule
+        all: Quarterly disaster recovery drill — failover and restore
+      - title: RTO / RPO Targets
+        all: Recovery time/point objectives defined per service tier
+      - title: Capacity Planning
+        all: Load projections, scaling thresholds, cost forecasts per quarter
+      - title: Service Delivery Runbook
+        all: >-
+          Playbook for executing outsourced/client service engagements — kickoff, status cadence,
+          escalation path, handoff/closeout — distinct from the SRE incident runbooks above; ties to
+          Statement of Work (1.1.11) and Client Engagement Portal (2.1.9)
+  - title: Architecture Governance
+    parameters:
+      - title: C4 Diagrams
+        azure: Context / Container / Component / Code diagrams
+        gcp: Context / Container / Component / Code diagrams
+        aws: Context / Container / Component / Code diagrams
+        oss: Context / Container / Component / Code diagrams via Structurizr (open-source-friendly)
+      - title: Architecture Decision Records
+        all: Every major decision with context and consequences
+      - title: Non-functional Requirements
+        all: Performance, scalability, availability targets
+      - title: Coding Standards
+        all: Naming, patterns, review checklist
+      - title: Software Design Principles
+        all: >-
+          YAGNI, KISS, DRY, SOLID — guardrails against over-engineering and premature abstraction,
+          enforced in code review
+      - title: Gang of Four (GoF) Design Patterns
+        all: >-
+          Creational, Structural, Behavioral patterns (Factory, Strategy, Observer, Decorator, etc.) —
+          shared vocabulary for common design problems
+      - title: API Design Guidelines
+        azure: >-
+          REST conventions, versioning, error formats — .NET APIs: ASP.NET Core Middleware pipeline
+          (cross-cutting concerns), Unit of Work pattern (EF Core DbContext), Repository pattern
+          (Repository<T> over DbSet<T>); Data Annotations/FluentValidation for validation, built-in
+          ProblemDetails for RFC7807 error responses
+        gcp: >-
+          REST conventions, versioning, error formats — .NET APIs: ASP.NET Core Middleware pipeline
+          (cross-cutting concerns), Unit of Work pattern (EF Core DbContext), Repository pattern
+          (Repository<T> over DbSet<T>); Data Annotations/FluentValidation for validation, built-in
+          ProblemDetails for RFC7807 error responses
+        aws: >-
+          REST conventions, versioning, error formats — .NET APIs: ASP.NET Core Middleware pipeline
+          (cross-cutting concerns), Unit of Work pattern (EF Core DbContext), Repository pattern
+          (Repository<T> over DbSet<T>); Data Annotations/FluentValidation for validation, built-in
+          ProblemDetails for RFC7807 error responses
+        oss: >-
+          REST conventions, versioning, error formats — Python: FastAPI/Django middleware, SQLAlchemy
+          Unit of Work + Repository pattern; Pydantic validation + RFC7807 error responses via
+          FastAPI. Java: Spring Boot interceptors/filters, JPA EntityManager as Unit of Work, Spring
+          Data Repository; Bean Validation + @ControllerAdvice/ProblemDetail for RFC7807 errors.
+          Node.js: Express/Koa middleware, Prisma/TypeORM Unit of Work + Repository pattern; Zod/Joi
+          validation + error-handling middleware
+      - title: Architecture Review Board
+        all: >-
+          ARB process — new services/technologies require formal approval, whether built in-house or
+          introduced via an outsourced/vendor engagement
+      - title: Approved Tech Stack List
+        all: >-
+          What is allowed vs needs ARB approval — applies to vendor-proposed technology choices in
+          outsourced engagements too, not just in-house choices
+      - title: Threat Model
+        azure: STRIDE analysis per service
+        gcp: STRIDE analysis per service
+        aws: STRIDE analysis per service
+        oss: STRIDE analysis per service using OWASP Threat Dragon (open-source)
+      - title: UI Design Guidelines
+        all: >-
+          Component structure & folder conventions (feature-based folders), design system usage
+          (Tailwind + component library), state management pattern selection (global vs local state),
+          accessibility enforcement (WCAG 2.1 AA checks in CI), responsive breakpoints — governs how
+          Frontend (6.2) technology choices get applied consistently
+      - title: DB Design Guidelines
+        azure: >-
+          Schema-first via EF Core migrations, naming conventions (PascalCase in C#, mapped to
+          snake_case in DB), normalization to 3NF with denormalization for read-heavy views, indexing
+          strategy reviewed at ARB
+        gcp: >-
+          Schema-first via EF Core migrations, naming conventions (PascalCase in C#, mapped to
+          snake_case in DB), normalization to 3NF with denormalization for read-heavy views, indexing
+          strategy reviewed at ARB
+        aws: >-
+          Schema-first via EF Core migrations, naming conventions (PascalCase in C#, mapped to
+          snake_case in DB), normalization to 3NF with denormalization for read-heavy views, indexing
+          strategy reviewed at ARB
+        oss: >-
+          Python: SQLAlchemy models + Alembic migrations, snake_case naming (PEP8), normalization to
+          3NF. Java: JPA/Hibernate entities + Flyway/Liquibase migrations, snake_case via naming
+          strategy. Node.js: Prisma/TypeORM schema + migrations, camelCase in code mapped to
+          snake_case in DB
+  - title: Change & Release Management
+    parameters:
+      - title: Release Calendar
+        all: Planned release dates aligned to sprint cadence
+      - title: Progressive Deployment (Canary / Blue-Green)
+        azure: >-
+          Ship to 1-5% of traffic first, automated rollback on health-check/error-rate breach before
+          reaching 100% of customers
+        gcp: >-
+          Ship to 1-5% of traffic first, automated rollback on health-check/error-rate breach before
+          reaching 100% of customers
+        aws: >-
+          Ship to 1-5% of traffic first, automated rollback on health-check/error-rate breach before
+          reaching 100% of customers
+        oss: >-
+          Flagger / Argo Rollouts (open-source K8s progressive delivery) — ship to 1-5% of traffic
+          first, automated rollback on health-check/error-rate breach
+      - title: Change Advisory Board
+        all: >-
+          CAB process — approve changes to production environment, whether the change originates from
+          in-house engineering or an outsourced/vendor delivery
+      - title: Definition of Done
+        all: >-
+          DoD checklist — tests pass, docs updated, SLO checked — for outsourced/vendor deliverables,
+          this is the acceptance gate referenced by the SOW's acceptance criteria (1.1.11)
+      - title: Definition of Ready
+        all: DoR checklist — story estimated, acceptance criteria written
+      - title: Technical Debt Registry
+        all: Logged debt items with priority and owner
+      - title: Incident Review Cadence
+        all: Weekly review of incidents, alerts, and near-misses
+  - title: Migration & Upgrade Management
+    parameters:
+      - title: DB Schema Migrations
+        azure: EF Core migrations — versioned, repeatable, CI-executed schema changes
+        gcp: EF Core migrations — versioned, repeatable, CI-executed schema changes
+        aws: EF Core migrations — versioned, repeatable, CI-executed schema changes
+        oss: Alembic (SQLAlchemy) — versioned, repeatable, CI-executed schema changes
+      - title: .NET Upgrades
+        azure: .NET Upgrade Assistant — tooling for major .NET version upgrades
+        gcp: .NET Upgrade Assistant — tooling for major .NET version upgrades
+        aws: .NET Upgrade Assistant — tooling for major .NET version upgrades
+        oss: pip-tools / pyupgrade — tooling for major Python version upgrades
+      - title: API Deprecation
+        all: API versioning + sunset headers — notify consumers before breaking change
+      - title: Cloud Migration Assessment
+        azure: >-
+          Azure Migrate — assess workloads before moving to Azure, including connectivity planning
+          (ExpressRoute, VPN tunneling) for hybrid/on-prem cutover
+        gcp: >-
+          Migration Center — assess workloads before moving to Google Cloud, including connectivity
+          planning (Cloud Interconnect, VPN tunneling) for hybrid/on-prem cutover
+        aws: >-
+          AWS Migration Evaluator / Application Discovery Service — assess workloads before moving to
+          AWS, including connectivity planning (Direct Connect, VPN tunneling) for hybrid/on-prem
+          cutover
+        oss: >-
+          Open-source discovery tools (CloudSploit, ScoutSuite) — assess workloads before moving,
+          including connectivity planning (site-to-site VPN, direct interconnect) for hybrid/on-prem
+          cutover
+      - title: Migration Strategy (7Rs)
+        all: >-
+          Rehost, Replatform, Refactor, Repurchase, Retire, Retain, Relocate — per-workload decision
+          framework following Cloud Migration Assessment
+      - title: Service Migration
+        all: Strangler Fig pattern — incremental service replacement without downtime

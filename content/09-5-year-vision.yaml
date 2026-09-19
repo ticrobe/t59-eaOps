@@ -1,0 +1,77 @@
+title: 5 Year Vision
+intro: >-
+  Op 9 is forward-looking, not built or committed — distinct from Op 3's watch-list of external
+  technologies being tracked, this is the trajectory of CPO's own architecture over the next five
+  years. **9.1 Platform Evolution** is where the built system (Ops 1–6) is headed — multi-tenant SaaS,
+  genuine active-active multi-cloud, CPO exposed as a developer platform, and periodic
+  outsource-vs-insource rebalancing as it matures. **9.2 AI Maturity Roadmap** is where the AI
+  capability (Ops 7–8) is headed — completing the Strangler Fig legacy sunset, bounded autonomous
+  agent operations, a self-optimizing eval/deployment loop, and the CPO Orchestrator Agent maturing
+  into a full planner.
+functions:
+  - title: Platform Evolution
+    parameters:
+      - title: Multi-Tenant SaaS Transition
+        all: >-
+          CPO evolves from a single-tenant deployment (one instance per client engagement) to a true
+          multi-tenant SaaS platform — builds on 6.4.8 Multi-tenancy (currently a per-service
+          data-isolation capability) becoming the platform's default operating model, with
+          tenant-aware routing, quota, and billing (1.1.12 Engagement Billing Model) built in from the
+          gateway down
+      - title: Full Multi-Cloud Portability (Active-Active)
+        azure: >-
+          Moves from today's Azure-primary posture (with documented GCP/AWS/OSS equivalents per
+          parameter) to genuine live active-active multi-cloud deployment — every service in Op 6
+          actually runs on 2+ clouds simultaneously, not just architected to be portable to them
+        gcp: >-
+          Moves from today's documented-equivalent posture to genuine live active-active multi-cloud
+          deployment — every service in Op 6 actually runs on 2+ clouds simultaneously, not just
+          architected to be portable to them
+        aws: >-
+          Moves from today's documented-equivalent posture to genuine live active-active multi-cloud
+          deployment — every service in Op 6 actually runs on 2+ clouds simultaneously, not just
+          architected to be portable to them
+        oss: >-
+          Moves from today's documented-equivalent posture to genuine live active-active multi-cloud
+          deployment — every service in Op 6 actually runs on 2+ clouds simultaneously, not just
+          architected to be portable to them
+      - title: CPO as a Platform (Developer Marketplace)
+        all: >-
+          CPO's Customer/Product/Order capabilities graduate from internal APIs to a monetizable
+          developer platform — builds on 8.6.6 API/Programmatic AI Channel and 6.3 Gateway & API
+          Management, adding partner onboarding, usage-based billing, and a public developer
+          marketplace
+      - title: Outsource-to-Insource Rebalancing
+        all: >-
+          Periodic re-evaluation of the build-vs-buy fork (1.1.4 Build vs. Buy Analysis) as the
+          platform matures — capabilities first delivered via SOW/vendor engagement (1.1.11) get
+          re-assessed for in-house ownership once they're core and stable, and vice versa for
+          capabilities that become commoditized
+  - title: AI Maturity Roadmap
+    parameters:
+      - title: Legacy Sunset Completion
+        all: >-
+          The Strangler Fig migration (7.2.1 AI-Native Rewrite) reaches 100% completion — every module
+          originally coexisting under 7.1 AI-Legacy Integration has been fully replaced, and the
+          sidecar/facade/legacy-data-pipeline scaffolding built to support the transition is formally
+          decommissioned
+      - title: Autonomous Agent Operations
+        all: >-
+          Progression from mandatory human-in-the-loop (8.3.6 Human-in-the-Loop Governance) to bounded
+          autonomous execution — the Approval Skill (8.7.4) auto-approves low-risk tool calls within
+          defined guardrails, reserving human review for genuinely high-risk actions (e.g. large
+          refunds) rather than every mutating call
+      - title: Self-Optimizing AI Pipeline
+        all: >-
+          A closed loop where 8.1.10 AI Evals and 8.5.6 Canary/Shadow Deployment auto-tune prompts and
+          model routing (8.2.2 Model Router) based on live production quality signals, without a human
+          manually authoring the next prompt version in 8.5.2's CI/CD pipeline
+      - title: Complete Autonomous CPO AI-fication
+        all: >-
+          The capstone of Op 9 — CPO operates autonomously end-to-end under AI control, not just at
+          the agent-tool layer (8.7): Op 6's backend services become primarily agent-invoked rather
+          than human/API-triggered, human involvement narrows to the strategic oversight and exception
+          path defined in 9.2.2, and 8.7.6 CPO Orchestrator Agent — matured from a request-router into
+          a fully agentic planner composing multi-step plans across Customer, Product, and Order
+          agents (8.7.1–8.7.3) — becomes the default entry point for every CPO workflow, not a
+          fallback for cases without a pre-defined orchestration pattern

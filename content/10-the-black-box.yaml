@@ -1,0 +1,82 @@
+title: The Black Box
+intro: >-
+  Op 10 is a forensic capability, not an operational one — modeled on an aircraft's flight recorder,
+  built specifically to answer "what happened right before this crashed," not to monitor day-to-day
+  health (that's 6.7 Observability) or log business changes (that's 6.4.6 Audit API). **10.1 System
+  Flight Data Recorder** is the technical half — continuous, tamper-evident state capture in storage
+  isolated from the systems it records, so it survives the very incident it exists to explain. **10.2
+  AI Cockpit Voice Recorder** is the AI-specific half — the complete reasoning trail behind every
+  agent action (8.7), captured immutably so an agent's bad decision can be replayed and understood
+  after the fact, not just monitored while it's happening.
+functions:
+  - title: System Flight Data Recorder
+    parameters:
+      - title: Immutable State Snapshot Capture
+        all: >-
+          Continuous, fine-grained capture of request/system state (inputs, decision points, resource
+          state) at every service boundary — independent of and outliving the normal observability
+          stack (6.7 Observability), analogous to a flight data recorder's continuous technical
+          telemetry
+      - title: Stall/Crash Recoverability
+        azure: >-
+          Stall detection — early degradation signals (rising latency, circuit-breaker trips per 6.6.1
+          Resilience Library, dropping agent confidence) trigger an auto-recovery attempt before a
+          full crash. If recovery fails, the Black Box's own storage (Azure Blob Storage with an
+          immutability policy, WORM/legal hold) sits in an account isolated from the services it
+          records, so it survives the crash itself — the way an aircraft's FDR is built to survive
+          impact
+        gcp: >-
+          Stall detection — early degradation signals (rising latency, circuit-breaker trips per 6.6.1
+          Resilience Library, dropping agent confidence) trigger an auto-recovery attempt before a
+          full crash. If recovery fails, the Black Box's own storage (Google Cloud Storage with Bucket
+          Lock, WORM) sits in a project isolated from the services it records, so it survives the
+          crash itself — the way an aircraft's FDR is built to survive impact
+        aws: >-
+          Stall detection — early degradation signals (rising latency, circuit-breaker trips per 6.6.1
+          Resilience Library, dropping agent confidence) trigger an auto-recovery attempt before a
+          full crash. If recovery fails, the Black Box's own storage (Amazon S3 with Object Lock,
+          WORM) sits in an account isolated from the services it records, so it survives the crash
+          itself — the way an aircraft's FDR is built to survive impact
+        oss: >-
+          Stall detection — early degradation signals (rising latency, circuit-breaker trips per 6.6.1
+          Resilience Library, dropping agent confidence) trigger an auto-recovery attempt before a
+          full crash. If recovery fails, the Black Box's own storage (MinIO with Object Lock,
+          open-source S3-compatible WORM) sits isolated from the services it records, so it survives
+          the crash itself — the way an aircraft's FDR is built to survive impact
+      - title: Time-Synchronized Timeline Reconstruction
+        all: >-
+          Correlates Black Box captures across every involved service and agent into a single
+          chronological incident timeline — distinct from 6.7.4 Centralized Log Aggregation's live,
+          searchable operational logs; assembled only during a formal investigation to answer what led
+          up to the crash
+      - title: Root-Cause Investigation Access Control
+        all: >-
+          Tightly scoped, fully audited access to Black Box data — granted only during a formal
+          incident investigation (feeds 4.1.3 Incident Response Playbook and 4.1.6 Postmortem
+          Process), not available for routine debugging, mirroring the legally protected access model
+          around aviation FDR/CVR data
+  - title: AI Cockpit Voice Recorder
+    parameters:
+      - title: Full Reasoning Trace Capture
+        all: >-
+          Captures the complete AI agent decision trail — prompts, tool calls, intermediate reasoning
+          steps, model outputs — for every agent action across 8.7's
+          Customer/Product/Order/Orchestrator agents, immutably and forensic-grade; distinct from
+          8.5.3 AI Observability & Tracing's live dev-debugging focus, this is write-once and kept
+          specifically for incident reconstruction, the AI-analog of a cockpit voice recorder
+      - title: Agent Decision Playback
+        all: >-
+          Reconstructs and replays step-by-step exactly what an agent saw and decided leading up to an
+          incident (e.g. an autonomous action under 9.2.2 Autonomous Agent Operations gone wrong) —
+          the AI-analog of CVR playback in an aviation crash investigation
+      - title: Post-Incident Review Board Integration
+        all: >-
+          Formal AI-incident investigation process feeding into 4.1.6 Postmortem Process and 8.4.4
+          Responsible AI Review Board — Black Box data (10.1, 10.2) is the primary evidence, reviewed
+          under the same access controls as 10.1.4
+      - title: Black Box Immutability Guarantee
+        all: >-
+          Cryptographic tamper-evidence (hash-chained records) layered on top of the underlying WORM
+          storage (10.1.2) — ensures the recorded reasoning trace cannot be altered even by someone
+          holding admin credentials, the property that makes Black Box findings trustworthy and
+          potentially legally defensible

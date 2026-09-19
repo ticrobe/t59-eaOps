@@ -1,0 +1,197 @@
+title: Security & Compliance
+intro: >-
+  Op 5 covers security end to end. **5.1 Identity & Governance** is who can access what — IdP,
+  RBAC/workload identity, secrets management, privileged identity, and conditional access. **5.2
+  DevSecOps** is security built into the pipeline — SAST, SCA, container scanning, and DevOps security
+  posture management. **5.3 Security Operations (SecOps)** is live threat monitoring — SIEM, CSPM,
+  XDR, and on-call alerting integration. **5.4 Penetration Testing & Ethical Hacking** is adversarial
+  validation — OWASP ZAP, manual and third-party pen testing, vulnerability disclosure, bug bounty,
+  and red team/blue team exercises. **5.5 License Compliance** is open-source license risk — scanning,
+  policy, and a combined vulnerability/license gate. **5.6 EOL & Package Management** is dependency
+  lifecycle — EOL tracking, automated updates, and vulnerability policy.
+functions:
+  - title: Identity & Governance
+    parameters:
+      - title: Identity Provider (IdP)
+        azure: Microsoft Entra ID — SSO, MFA, OAuth2/OIDC, app registrations
+        gcp: Google Cloud Identity Platform — SSO, MFA, OAuth2/OIDC, OAuth 2.0 client IDs
+        aws: Amazon Cognito — SSO, MFA, OAuth2/OIDC, app clients
+        oss: Keycloak / Authentik (open-source IdP) — SSO, MFA, OAuth2/OIDC, client registration
+      - title: RBAC + Workload Identity
+        azure: Role-based access via Azure RBAC, Managed Identity for Azure resources — no service credentials
+        gcp: Role-based access via Cloud IAM, Workload Identity Federation — no service credentials
+        aws: Role-based access via AWS IAM, IAM Roles for Service Accounts (IRSA) — no service credentials
+        oss: Role-based access via OPA/Casbin, workload identity (SPIFFE/SPIRE) — no service credentials
+      - title: Secrets Management
+        azure: Azure Key Vault — secrets, certs, keys, zero hardcoded values
+        gcp: Google Cloud Secret Manager — secrets, certs, keys, zero hardcoded values
+        aws: AWS Secrets Manager — secrets, certs, keys, zero hardcoded values
+        oss: HashiCorp Vault (open-source) — secrets, certs, keys, zero hardcoded values
+      - title: Privileged Identity Mgmt
+        azure: PIM (Privileged Identity Management) — just-in-time admin access with approval flow
+        gcp: Privileged Access Manager — just-in-time admin access with approval flow
+        aws: >-
+          IAM Identity Center temporary elevated access (Permission Sets) — just-in-time admin access
+          with approval flow
+        oss: Teleport / HashiCorp Boundary (open-source PAM) — just-in-time admin access with approval flow
+      - title: Conditional Access
+        azure: Entra Conditional Access policies — block risky sign-ins automatically
+        gcp: Context-Aware Access (BeyondCorp Enterprise) — block risky sign-ins automatically
+        aws: IAM Identity Center conditional access policies — block risky sign-ins automatically
+        oss: Keycloak conditional authentication policies — block risky sign-ins automatically
+  - title: DevSecOps
+    parameters:
+      - title: SAST (Static Application Security Testing)
+        azure: SonarCloud — SAST, code quality + security vulnerabilities in CI
+        gcp: SonarCloud — SAST, code quality + security vulnerabilities in CI
+        aws: SonarCloud — SAST, code quality + security vulnerabilities in CI
+        oss: SonarQube Community Edition (open-source) — SAST, code quality + security vulnerabilities in CI
+      - title: SCA (Software Composition Analysis)
+        azure: Snyk — SCA, NuGet/npm dependency vulnerability scanning
+        gcp: Snyk — SCA, dependency vulnerability scanning
+        aws: Snyk — SCA, dependency vulnerability scanning
+        oss: OSV-Scanner / pip-audit (open-source) — SCA, PyPI/npm dependency vulnerability scanning
+      - title: Trivy
+        azure: Trivy — container image scan before every ACR (Azure Container Registry) push
+        gcp: Trivy — container image scan before every Artifact Registry push
+        aws: Trivy — container image scan before every ECR (Elastic Container Registry) push
+        oss: Trivy — container image scan before every registry push
+      - title: DevOps Security Posture Management
+        azure: Microsoft Defender for DevOps — Azure-native security posture across pipelines
+        gcp: Security Command Center — Google Cloud-native security posture across pipelines
+        aws: AWS Security Hub — AWS-native security posture across pipelines
+        oss: Open-source security posture tooling (Checkov, tfsec) across pipelines
+      - title: Load Testing
+        azure: >-
+          Azure Load Testing / k6 — load testing (expected traffic), stress testing (beyond capacity
+          to find the breaking point), and spike testing (sudden traffic surge), validating throughput
+          before release
+        gcp: >-
+          k6 / Locust — load testing (expected traffic), stress testing (beyond capacity to find the
+          breaking point), and spike testing (sudden traffic surge), validating throughput before
+          release
+        aws: >-
+          k6 / Locust — load testing (expected traffic), stress testing (beyond capacity to find the
+          breaking point), and spike testing (sudden traffic surge), validating throughput before
+          release
+        oss: >-
+          Locust / k6 (open-source) — load testing (expected traffic), stress testing (beyond capacity
+          to find the breaking point), and spike testing (sudden traffic surge), validating throughput
+          before release
+  - title: Security Operations (SecOps)
+    parameters:
+      - title: SIEM (Security Information & Event Management)
+        azure: Microsoft Sentinel — SIEM, collects all logs, detects threats, raises incidents
+        gcp: Google Security Operations (Chronicle) — SIEM, collects all logs, detects threats, raises incidents
+        aws: >-
+          Amazon Security Lake + GuardDuty — SIEM-equivalent, collects all logs, detects threats,
+          raises incidents
+        oss: Wazuh (open-source SIEM) — collects all logs, detects threats, raises incidents
+      - title: Cloud Security Posture Management (CSPM)
+        azure: >-
+          Microsoft Defender for Cloud — posture management and misconfigurations across Azure
+          resources; unified security dashboard with compliance score and vulnerability reports
+        gcp: >-
+          Security Command Center Premium — posture management and misconfigurations across GCP
+          resources; unified security dashboard with compliance score and vulnerability reports
+        aws: >-
+          AWS Security Hub + Config — posture management and misconfigurations across AWS resources;
+          unified security dashboard with compliance score and vulnerability reports
+        oss: >-
+          Wazuh / Prowler (open-source) — posture management and misconfigurations across cloud
+          resources; compliance score and vulnerability reports
+      - title: Extended Detection & Response (XDR)
+        azure: Microsoft Defender XDR — extended detection, correlates identity, endpoint, cloud signals
+        gcp: >-
+          Google Security Operations (Chronicle) + Security Command Center — extended detection,
+          correlates identity, endpoint, cloud signals
+        aws: Amazon GuardDuty + Detective — extended detection, correlates identity, endpoint, cloud signals
+        oss: Wazuh + osquery — extended detection correlating identity, endpoint, cloud signals
+      - title: Splunk / Elastic SIEM
+        all: Splunk / Elastic SIEM — vendor-neutral third-party SIEM alternative to any cloud-native option
+      - title: PagerDuty / OpsGenie
+        azure: PagerDuty / OpsGenie — alert routing, right alert to right person at right time
+        gcp: PagerDuty / OpsGenie — alert routing, right alert to right person at right time
+        aws: PagerDuty / OpsGenie — alert routing, right alert to right person at right time
+        oss: Grafana OnCall (open-source) — alert routing, right alert to right person at right time
+  - title: Penetration Testing & Ethical Hacking
+    parameters:
+      - title: OWASP ZAP
+        all: DAST — automated dynamic scan against running app in CI/CD
+      - title: Manual Penetration Testing Tooling
+        azure: Burp Suite — manual API and web app vulnerability testing by security team
+        gcp: Burp Suite — manual API and web app vulnerability testing by security team
+        aws: Burp Suite — manual API and web app vulnerability testing by security team
+        oss: OWASP ZAP / sqlmap (open-source) — manual API and web app vulnerability testing
+      - title: Infrastructure & Network Vulnerability Scanning
+        azure: >-
+          Reduced scanning surface with serverless (Azure Container Apps) — no node OS to patch/scan,
+          managed by platform; Nessus / Qualys across AKS nodes only if self-managing Kubernetes
+        gcp: >-
+          Reduced scanning surface with serverless (Cloud Run) — no node OS to patch/scan, managed by
+          platform; Nessus / Qualys across GKE nodes only if self-managing Kubernetes
+        aws: >-
+          Reduced scanning surface with serverless (Fargate) — no node OS to patch/scan, managed by
+          platform; Nessus / Qualys across EKS nodes only if self-managing Kubernetes
+        oss: OpenVAS (open-source) — infrastructure and network vulnerability scanning
+      - title: Third-party Pen Test
+        all: Annual certified firm audit (CrowdStrike/NCC/Rapid7) for SOC2
+      - title: Vulnerability Disclosure Policy (VDP)
+        all: >-
+          Safe-harbor policy for external researchers to report vulnerabilities — no monetary reward,
+          precursor to a paid bounty program
+      - title: Bug Bounty Program
+        all: HackerOne / Bugcrowd — crowd-sourced external vulnerability reports
+      - title: Bounty Payout Tiers
+        all: Severity-based (CVSS) reward scale — defines payout per vulnerability class
+      - title: Red Team / Blue Team
+        all: Red = ethical attackers, Blue = defenders, Purple = combined exercise
+      - title: Kali Linux
+        all: Security toolbox OS — Metasploit, Nmap, sqlmap, Hydra, Nikto, ZAP
+  - title: License Compliance
+    parameters:
+      - title: License Scanning
+        azure: FOSSA — scan every package license in CI/CD, block GPL in commercial code
+        gcp: FOSSA — scan every package license in CI/CD, block GPL in commercial code
+        aws: FOSSA — scan every package license in CI/CD, block GPL in commercial code
+        oss: >-
+          ScanCode Toolkit / FOSSology (open-source) — scan every package license in CI/CD, block GPL
+          in commercial code
+      - title: License Policy
+        azure: Mend (WhiteSource) / Black Duck — approved license allowlist
+        gcp: Mend (WhiteSource) / Black Duck — approved license allowlist
+        aws: Mend (WhiteSource) / Black Duck — approved license allowlist
+        oss: ORT (OSS Review Toolkit, open-source) — approved license allowlist
+      - title: Unified Vulnerability + License Gate
+        azure: Snyk License Compliance — unified vuln + license gate in one tool
+        gcp: Snyk License Compliance — unified vuln + license gate in one tool
+        aws: Snyk License Compliance — unified vuln + license gate in one tool
+        oss: ScanCode + ORT (open-source) — unified vuln + license gate in one toolchain
+  - title: EOL & Package Management
+    parameters:
+      - title: EOL Tracking
+        azure: Endoflife.date + Microsoft Product Lifecycle — track framework/runtime expiry
+        gcp: Endoflife.date + Google Cloud version support policy — track framework/runtime expiry
+        aws: Endoflife.date + AWS version support policy — track framework/runtime expiry
+        oss: Endoflife.date + Microsoft Product Lifecycle — track framework/runtime expiry
+      - title: Automated Updates
+        all: Renovate Bot / Dependabot — auto PRs when packages have newer versions
+      - title: Vulnerability Policy
+        azure: Snyk reporting dashboard — CVE severity policy, block on critical
+        gcp: Snyk reporting dashboard — CVE severity policy, block on critical
+        aws: Snyk reporting dashboard — CVE severity policy, block on critical
+        oss: pip-audit / OSV-Scanner reporting dashboard — CVE severity policy, block on critical
+      - title: Kubernetes Version Upgrades
+        azure: >-
+          N/A for serverless (Azure Container Apps has no cluster version to track); if self-managing
+          Kubernetes, Azure Advisor alerts — track AKS version support windows
+        gcp: >-
+          N/A for serverless (Cloud Run has no cluster version to track); if self-managing Kubernetes,
+          GKE release channel notifications — track GKE version support windows
+        aws: >-
+          N/A for serverless (Fargate has no cluster version to track); if self-managing Kubernetes,
+          EKS version support alerts — track EKS version support windows
+        oss: >-
+          N/A for serverless (Knative has no cluster version to track beyond the underlying platform);
+          if self-managing Kubernetes, version alerts (kubent, Fairwinds Polaris, open-source) — track
+          K8s version support windows
