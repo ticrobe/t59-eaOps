@@ -1,0 +1,25 @@
+name: Error report
+description: A factual error, broken cross-reference, typo or layout problem
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: eaOps version
+      placeholder: "26.9.1"
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Where?
+      description: The item number and title, e.g. "8.5.3 AI Observability & Tracing".
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong?
+      description: Include the text as written and what it should say. For layout problems, add your browser and a screenshot.
+    validations:
+      required: true

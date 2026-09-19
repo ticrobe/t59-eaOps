@@ -1,0 +1,50 @@
+name: Tooling bug
+description: A problem with make or the build scripts (build_html.py, build_block_diagram.py)
+title: "[Tooling] "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: tool
+    attributes:
+      label: Which tool?
+      options:
+        - make check
+        - make preview
+        - build_html.py
+        - build_block_diagram.py
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: What did you run?
+      description: The exact command.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: What happened?
+      description: Paste the full output or error message.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+  - type: input
+    id: environment
+    attributes:
+      label: Operating system and Python version
+      placeholder: "macOS 15, Python 3.14"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: eaOps version
+      description: The contents of the VERSION file.
+      placeholder: "26.9.1"

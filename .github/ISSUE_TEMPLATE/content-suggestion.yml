@@ -1,0 +1,43 @@
+name: Content suggestion
+description: Add, change or remove a Function or Parameter
+labels: ["content"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: eaOps version
+      placeholder: "26.9.1"
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Where does it belong?
+      description: The Op or Function number and name, e.g. "6.7 Observability".
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of change?
+      options:
+        - Add a Parameter
+        - Add a Function
+        - Change an existing item
+        - Remove an item
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: The item title and a short description. If you can, give the Azure, GCP, AWS and open-source wording.
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Why does an enterprise architect need this?
+      description: Ideally tied to the Customer, Products & Orders (CPO) use case. Link a public source for any specific claim.
+    validations:
+      required: true

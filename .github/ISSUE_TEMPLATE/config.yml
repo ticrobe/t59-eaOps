@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a question or share an idea
+    url: https://github.com/ticrobe/t59-eaOps/discussions
+    about: Use Discussions for questions and open-ended ideas. Use an issue for a specific change or problem.
