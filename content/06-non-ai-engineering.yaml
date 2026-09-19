@@ -1,0 +1,574 @@
+title: Non-AI Engineering
+intro: >-
+  Op 6 is the full engineering stack, entity by entity and layer by layer — serverless-primary
+  throughout, with Kubernetes/VMs only as an explicit secondary path. **6.1 Traffic & Networking** —
+  CDN, DDoS protection, load balancing, rate limiting. **6.2 Frontend** — the client stack across
+  web/desktop/mobile/wearable/TV. **6.3 Gateway & API Management** — API gateway, versioning, feature
+  flags, developer portal, GraphQL. **6.4 Backend Services** — the
+  Customer/Product/Order/Audit/Identity APIs plus multi-tenancy, sagas, and dead-letter handling.
+  **6.5 Data & Messaging** — database choice, caching, the event bus, and BI. **6.6 Resilience &
+  Reliability** — retry/circuit-breaker, health checks, autoscaling, multi-AZ HA, chaos engineering.
+  **6.7 Observability** — tracing, monitoring, OpenTelemetry, log aggregation. **6.8 Testing &
+  Quality** — unit through E2E and performance testing. **6.9 Localization & Accessibility** —
+  i18n/l10n, RTL, timezones. **6.10 Infrastructure & Cost** — container registry/runtime, CI/CD, IaC,
+  cost optimization. **6.11 Developer Experience** — local dev setup and AI coding assistants. **6.12
+  Cross-Cell/Service Integration** ties it together — the cell-based architecture pattern and the full
+  Customer/Product/Order CRUD event set that powers 8.7's multi-agent workflow.
+functions:
+  - title: Traffic & Networking
+    parameters:
+      - title: Global CDN & Edge Security
+        azure: Azure Front Door — global CDN, WAF, DDoS edge, geo-routing
+        gcp: Google Cloud CDN + Cloud Armor — global CDN, WAF, DDoS edge, geo-routing
+        aws: Amazon CloudFront + AWS WAF — global CDN, WAF, DDoS edge, geo-routing
+        oss: Cloudflare (free tier) / Fastly — global CDN, WAF, DDoS edge, geo-routing
+      - title: DDoS Protection
+        azure: Azure DDoS Protection — network-layer volumetric attack mitigation
+        gcp: Google Cloud Armor (DDoS protection) — network-layer volumetric attack mitigation
+        aws: AWS Shield — network-layer volumetric attack mitigation
+        oss: Cloudflare / open-source edge rate-limiting — network-layer volumetric attack mitigation
+      - title: Application Load Balancer / Gateway
+        azure: Azure Application Gateway — SSL termination, load balancing, WAF rules
+        gcp: Google Cloud Load Balancing (HTTPS LB) + Cloud Armor — SSL termination, load balancing, WAF rules
+        aws: AWS Application Load Balancer (ALB) + AWS WAF — SSL termination, load balancing, WAF rules
+        oss: NGINX / HAProxy (open-source) — SSL termination, load balancing, WAF rules via ModSecurity
+      - title: API Rate Limiting
+        azure: YARP Rate Limiting — per-client request throttling at gateway
+        gcp: Cloud Armor rate limiting / API Gateway quotas — per-client request throttling at gateway
+        aws: AWS WAF rate-based rules / API Gateway usage plans — per-client request throttling at gateway
+        oss: FastAPI + slowapi / Django-ratelimit (open-source) — per-client request throttling at gateway
+      - title: Redis Quota Counters
+        azure: Azure Cache for Redis — per-client daily/monthly API quota caps
+        gcp: Memorystore for Redis — per-client daily/monthly API quota caps
+        aws: Amazon ElastiCache for Redis — per-client daily/monthly API quota caps
+        oss: Redis (self-hosted) — per-client daily/monthly API quota caps
+      - title: Geo-redundancy / DR
+        azure: Secondary Azure region + Azure Traffic Manager — failover
+        gcp: Secondary GCP region + Cloud DNS failover routing policy — failover
+        aws: Secondary AWS region + Route 53 failover routing — failover
+        oss: Secondary region + DNS-based failover (CoreDNS / PowerDNS, open-source)
+  - title: Frontend
+    parameters:
+      - title: Client Platform Coverage
+        all: >-
+          Browser (web), Desktop (Windows/macOS/Linux), PWA (installable, offline-capable), Mobile
+          (iOS/Android), Tablet, Wearable (watchOS/Wear OS), TV (tvOS/Android TV)
+      - title: Next.js 14 App Router
+        all: >-
+          SSR, ISR, Server Components, streaming — covers Browser and PWA only; see 6.2.10-6.2.12 for
+          Desktop/Mobile/Wearable/TV
+      - title: Redux Toolkit + RTK Query
+        all: Global state and API data fetching
+      - title: Tailwind CSS
+        all: Utility-first design system
+      - title: WCAG Accessibility
+        all: Keyboard nav, ARIA labels, screen reader support
+      - title: Real-time Push / WebSocket Client
+        azure: SignalR — real-time push, live audit events, notifications
+        gcp: >-
+          WebSocket API via Cloud Run / Firebase Realtime Database — real-time push, live audit
+          events, notifications
+        aws: API Gateway WebSocket APIs — real-time push, live audit events, notifications
+        oss: >-
+          Socket.IO / WebSockets (FastAPI WebSocket, Django Channels) — real-time push, live audit
+          events, notifications
+      - title: i18n / Localization
+        all: See 6.9 Localization & Accessibility for i18n/l10n/RTL/timezone detail
+      - title: Admin / Back-office Portal
+        all: Internal tool for support teams to manage records
+      - title: Widget-based Layout
+        all: >-
+          Dashboard composed of independent, configurable/draggable widgets (react-grid-layout or
+          similar) — each widget fetches its own data and can be rearranged/resized by the user,
+          common in admin and analytics UIs
+      - title: Desktop Shell
+        all: Electron / Tauri — wraps the web app for Desktop (Windows/macOS/Linux)
+      - title: Mobile & Tablet App
+        all: >-
+          React Native (or Flutter) — native iOS/Android/Tablet app, sharing business logic and API
+          layer with the web app where practical
+      - title: Wearable & TV App
+        all: >-
+          watchOS (SwiftUI) / Wear OS (Jetpack Compose) for Wearable; tvOS / Android TV for TV —
+          typically thin companion apps, not full client rebuilds
+  - title: Gateway & API Management
+    parameters:
+      - title: API Gateway
+        azure: YARP — reverse proxy routing all traffic to services
+        gcp: Apigee / Cloud Load Balancing + Cloud Endpoints — reverse proxy routing all traffic to services
+        aws: Amazon API Gateway — reverse proxy routing all traffic to services
+        oss: Traefik / Kong (open-source) — reverse proxy routing all traffic to services
+      - title: API Versioning
+        all: /api/v1/ → /api/v2/ with deprecation headers
+      - title: API Response & Error Standardization
+        all: >-
+          Shared middleware enforcing consistent response envelopes (RFC 7807 Problem Details),
+          centralized error code catalog, and structured logging with correlation IDs across every
+          backend service
+      - title: Idempotency Keys
+        all: Duplicate POST protection via client request ID
+      - title: Feature Flags
+        azure: Azure App Configuration — toggle features per env
+        gcp: Firebase Remote Config / Parameter Manager — toggle features per env
+        aws: AWS AppConfig — toggle features per env
+        oss: Unleash / Flagsmith (open-source) — toggle features per env
+      - title: Developer Portal
+        azure: Azure API Management portal + subscription keys
+        gcp: Apigee developer portal + API keys
+        aws: Amazon API Gateway developer portal + usage plans/API keys
+        oss: Backstage (open-source developer portal) — API docs, subscription keys, sandbox environment
+      - title: Auto-generated SDK
+        azure: OpenAPI → client SDK (NSwag / Kiota)
+        gcp: OpenAPI → client SDK (NSwag / Kiota)
+        aws: OpenAPI → client SDK (NSwag / Kiota)
+        oss: OpenAPI Generator (open-source) — OpenAPI → client SDK
+      - title: Webhook Engine
+        all: Outbound webhooks for external system subscriptions
+      - title: GraphQL API
+        azure: >-
+          Self-hosted GraphQL server (Hot Chocolate for .NET) on Azure Container Apps —
+          client-specified queries reduce over/under-fetching; schema-first design (SDL), resolvers
+          per field, DataLoader pattern to avoid N+1 queries; AKS only if self-managing Kubernetes
+        gcp: >-
+          Self-hosted GraphQL server (Apollo Server) on Cloud Run, or Apigee GraphQL proxy —
+          client-specified queries reduce over/under-fetching; schema-first design (SDL), resolvers
+          per field, DataLoader pattern to avoid N+1 queries; GKE only if self-managing Kubernetes
+        aws: >-
+          AWS AppSync (managed GraphQL) — client-specified queries reduce over/under-fetching;
+          schema-first design (SDL), resolvers per field, DataLoader pattern to avoid N+1 queries
+        oss: >-
+          Apollo Server / GraphQL Yoga (open-source) — client-specified queries reduce
+          over/under-fetching; schema-first design (SDL), resolvers per field, DataLoader pattern to
+          avoid N+1 queries
+  - title: Backend Services
+    parameters:
+      - title: Microservices Architecture (API layer)
+        all: >-
+          Independently deployable, per-domain API services (Customer, Product, Order, Audit,
+          Identity) vs. a single monolithic API
+      - title: Repository + Unit of Work Pattern
+        azure: >-
+          Data access abstraction (Repository) + transactional consistency across repositories (Unit
+          of Work) — decouples business logic from EF Core
+        gcp: >-
+          Data access abstraction (Repository) + transactional consistency across repositories (Unit
+          of Work) — decouples business logic from EF Core
+        aws: >-
+          Data access abstraction (Repository) + transactional consistency across repositories (Unit
+          of Work) — decouples business logic from EF Core
+        oss: >-
+          SQLAlchemy Repository pattern + explicit transaction/session scope (Unit of Work) —
+          decouples business logic from ORM (Python). Java: Spring Data JPA Repository +
+          @Transactional (Unit of Work). Node.js: Prisma/TypeORM Repository + transaction() wrapper
+          (Unit of Work)
+      - title: Customer API
+        azure: CRUD — Clean Architecture + CQRS + MediatR
+        gcp: CRUD — Clean Architecture + CQRS + MediatR
+        aws: CRUD — Clean Architecture + CQRS + MediatR
+        oss: >-
+          CRUD — FastAPI/Django + CQRS pattern + explicit command/query handlers (dependency
+          injection, no MediatR needed)
+      - title: Product API
+        azure: >-
+          CRUD — Clean Architecture + CQRS + MediatR; catalog structure (SKU, categories, variants),
+          inventory/stock levels, pricing tiers, in-service keyword search/filter (no separate search
+          microservice)
+        gcp: >-
+          CRUD — Clean Architecture + CQRS + MediatR; catalog structure (SKU, categories, variants),
+          inventory/stock levels, pricing tiers, in-service keyword search/filter (no separate search
+          microservice)
+        aws: >-
+          CRUD — Clean Architecture + CQRS + MediatR; catalog structure (SKU, categories, variants),
+          inventory/stock levels, pricing tiers, in-service keyword search/filter (no separate search
+          microservice)
+        oss: >-
+          CRUD — FastAPI/Django + CQRS pattern + explicit command/query handlers (dependency
+          injection, no MediatR needed); catalog structure (SKU, categories, variants),
+          inventory/stock levels, pricing tiers, in-service keyword search/filter (no separate search
+          microservice)
+      - title: Order API
+        azure: >-
+          CRUD — Clean Architecture + CQRS + MediatR; order lifecycle state machine (Placed → Paid →
+          Fulfilled → Shipped → Delivered → Returned), links Customer + Product + payment/fulfillment
+          events, in-service order search/filter (no separate search microservice)
+        gcp: >-
+          CRUD — Clean Architecture + CQRS + MediatR; order lifecycle state machine (Placed → Paid →
+          Fulfilled → Shipped → Delivered → Returned), links Customer + Product + payment/fulfillment
+          events, in-service order search/filter (no separate search microservice)
+        aws: >-
+          CRUD — Clean Architecture + CQRS + MediatR; order lifecycle state machine (Placed → Paid →
+          Fulfilled → Shipped → Delivered → Returned), links Customer + Product + payment/fulfillment
+          events, in-service order search/filter (no separate search microservice)
+        oss: >-
+          CRUD — FastAPI/Django + CQRS pattern + explicit command/query handlers (dependency
+          injection, no MediatR needed); order lifecycle state machine (Placed → Paid → Fulfilled →
+          Shipped → Delivered → Returned), links Customer + Product + payment/fulfillment events,
+          in-service order search/filter (no separate search microservice)
+      - title: Audit API
+        all: Immutable event log of every change
+      - title: Identity API
+        azure: OAuth2/OIDC, JWT, RBAC via Microsoft Entra ID
+        gcp: OAuth2/OIDC, JWT, RBAC via Google Cloud Identity Platform
+        aws: OAuth2/OIDC, JWT, RBAC via Amazon Cognito
+        oss: OAuth2/OIDC, JWT, RBAC via Keycloak/Authlib
+      - title: Multi-tenancy
+        all: Tenant isolation layer — row-level or schema-per-tenant
+      - title: Soft Delete + Retention
+        all: Archive records, enforce GDPR retention policies
+      - title: Background Job Scheduler
+        azure: Hangfire or Azure Durable Functions for long-running jobs
+        gcp: Cloud Tasks / Cloud Workflows for long-running jobs
+        aws: AWS Step Functions / Amazon SQS + Lambda for long-running jobs
+        oss: Celery + Redis/RabbitMQ (open-source) — for long-running jobs
+      - title: Saga Pattern
+        azure: Distributed transaction rollback/compensation via Azure Service Bus
+        gcp: Distributed transaction rollback/compensation via Pub/Sub + Workflows
+        aws: Distributed transaction rollback/compensation via Amazon SQS/SNS + Step Functions
+        oss: Distributed transaction rollback/compensation via Kafka/RabbitMQ + Celery
+      - title: Dead Letter Queue Handler
+        azure: Poison message detection, retry, alert on Azure Service Bus DLQ
+        gcp: Poison message detection, retry, alert on Pub/Sub dead-letter topics
+        aws: Poison message detection, retry, alert on Amazon SQS DLQ
+        oss: Poison message detection, retry, alert on RabbitMQ/Kafka DLQ
+  - title: Data & Messaging
+    parameters:
+      - title: Database Architecture Decision
+        all: >-
+          RDBMS (transactional, relational) vs. NoSQL (document/key-value, schema flexibility) —
+          per-workload choice, not one-size-fits-all
+      - title: Relational Database
+        azure: Azure SQL + EF Core — relational store, migrations, TDE encryption at rest
+        gcp: Cloud SQL (PostgreSQL/MySQL) — relational store, migrations, encryption at rest
+        aws: Amazon RDS — relational store, migrations, encryption at rest
+        oss: >-
+          PostgreSQL + SQLAlchemy — relational store, Alembic migrations, pgcrypto/TDE-equivalent
+          encryption at rest
+      - title: Immutable Backups
+        azure: >-
+          Azure Backup (immutability support) — air-gapped, immutable point-in-time backups, survive
+          ransomware/compromised-admin scenarios where live data and mutable backups are both
+          destroyed
+        gcp: >-
+          Google Cloud Backup and DR (Backup Vault with immutability) — air-gapped, immutable
+          point-in-time backups, survive ransomware/compromised-admin scenarios where live data and
+          mutable backups are both destroyed
+        aws: >-
+          AWS Backup with Vault Lock (WORM) — air-gapped, immutable point-in-time backups, survive
+          ransomware/compromised-admin scenarios where live data and mutable backups are both
+          destroyed
+        oss: Air-gapped, immutable point-in-time backups via pgBackRest / Restic (open-source)
+      - title: Caching / Session Store
+        azure: Azure Cache for Redis — response cache, session store, quota counters
+        gcp: Memorystore for Redis — response cache, session store, quota counters
+        aws: Amazon ElastiCache for Redis — response cache, session store, quota counters
+        oss: Redis (self-hosted) — response cache, session store, quota counters
+      - title: Event Bus / Message Broker
+        azure: Azure Service Bus — async event bus decoupling all microservices
+        gcp: Google Cloud Pub/Sub — async event bus decoupling all microservices
+        aws: Amazon SQS/SNS — async event bus decoupling all microservices
+        oss: RabbitMQ / Apache Kafka (open-source) — async event bus decoupling all microservices
+      - title: Data Warehouse
+        azure: Azure Synapse Analytics — data warehouse for reporting and BI queries
+        gcp: Google BigQuery — data warehouse for reporting and BI queries
+        aws: Amazon Redshift — data warehouse for reporting and BI queries
+        oss: Apache Spark / DuckDB (open-source) — data warehouse for reporting and BI queries
+      - title: Business Intelligence Dashboards
+        azure: Power BI — business dashboards on top of customer data
+        gcp: Looker Studio — business dashboards on top of customer data
+        aws: Amazon QuickSight — business dashboards on top of customer data
+        oss: Apache Superset / Metabase (open-source) — business dashboards on top of customer data
+  - title: Resilience & Reliability
+    parameters:
+      - title: Resilience Library (Retry/Circuit Breaker/Bulkhead)
+        azure: Polly — retry, circuit breaker, bulkhead in all .NET services
+        gcp: Polly — retry, circuit breaker, bulkhead in all .NET services
+        aws: Polly — retry, circuit breaker, bulkhead in all .NET services
+        oss: >-
+          Tenacity / circuitbreaker (Python) — retry, circuit breaker, bulkhead. Java: resilience4j.
+          Node.js: cockatiel / opossum
+      - title: Health Checks
+        azure: >-
+          Built-in health checks (HTTP probe, auto-detected startup) on Azure Container Apps;
+          Kubernetes liveness + readiness probes on AKS pods only if self-managing a cluster
+        gcp: >-
+          Built-in health checks (HTTP probe, auto-detected startup) on Cloud Run; Kubernetes liveness
+          + readiness probes on GKE pods only if self-managing a cluster
+        aws: >-
+          Built-in health checks (HTTP probe, auto-detected startup) on AWS Fargate; Kubernetes
+          liveness + readiness probes on EKS pods only if self-managing a cluster
+        oss: >-
+          Built-in health checks on Knative; Kubernetes liveness + readiness probes only if
+          self-managing a cluster
+      - title: HPA
+        all: Horizontal Pod Autoscaler — scale on CPU/memory
+      - title: High Availability (Multi-AZ)
+        azure: >-
+          Azure Container Apps (Multi-AZ by default) + Azure SQL + Azure Cache for Redis replicated
+          across Availability Zones; AKS node pools spanning AZs only if self-managing Kubernetes
+        gcp: >-
+          Cloud Run (Multi-AZ by default) + Cloud SQL + Memorystore for Redis replicated across
+          Availability Zones; GKE node pools spanning AZs only if self-managing Kubernetes
+        aws: >-
+          AWS Fargate (Multi-AZ by default) + Amazon RDS + ElastiCache for Redis replicated across
+          Availability Zones; EKS node pools spanning AZs only if self-managing Kubernetes
+        oss: >-
+          Knative (Multi-AZ per underlying cluster config) + PostgreSQL (Patroni) + Redis Sentinel
+          replicated across Availability Zones; self-managed Kubernetes node pools only if needed
+      - title: Chaos Engineering
+        azure: >-
+          Azure Chaos Studio — fault injection testing targeting Container Apps dependencies/network
+          by default; extends to AKS pod-level faults only if self-managing Kubernetes
+        gcp: >-
+          Chaos Mesh / Litmus (open-source) — fault injection testing; self-hosted on GKE only if
+          self-managing Kubernetes, otherwise target Cloud Run's dependencies/network directly
+        aws: >-
+          AWS Fault Injection Service (FIS) — fault injection testing targeting Fargate
+          dependencies/network by default; extends to EKS pod-level faults only if self-managing
+          Kubernetes
+        oss: >-
+          Chaos Mesh / Litmus (open-source) — fault injection testing; requires a Kubernetes cluster
+          (self-managed) as the target
+  - title: Observability
+    parameters:
+      - title: Distributed Tracing & APM
+        azure: Application Insights — distributed tracing, request telemetry, exceptions
+        gcp: Cloud Trace + Cloud Profiler — distributed tracing, request telemetry, exceptions
+        aws: AWS X-Ray — distributed tracing, request telemetry, exceptions
+        oss: Jaeger / Grafana Tempo (open-source) — distributed tracing, request telemetry, exceptions
+      - title: Monitoring & Alerting
+        azure: Azure Monitor — alerts, dashboards, metric-based autoscaling
+        gcp: Google Cloud Monitoring — alerts, dashboards, metric-based autoscaling
+        aws: Amazon CloudWatch — alerts, dashboards, metric-based autoscaling
+        oss: Prometheus + Grafana (open-source) — alerts, dashboards, metric-based autoscaling
+      - title: OpenTelemetry
+        all: Vendor-neutral traces + metrics across all services
+      - title: Centralized Log Aggregation
+        azure: >-
+          Azure Log Analytics (Azure Monitor Logs) — centralized log aggregation and KQL querying
+          across all resources
+        gcp: Google Cloud Logging — centralized log aggregation and querying across all resources
+        aws: Amazon CloudWatch Logs — centralized log aggregation and querying across all resources
+        oss: >-
+          ELK Stack (Elasticsearch, Logstash, Kibana) / Grafana Loki — centralized log aggregation and
+          querying
+  - title: Testing & Quality
+    parameters:
+      - title: Unit Testing Framework
+        azure: >-
+          xUnit + Moq — unit tests per .NET service; white-box (internals-aware) by nature, enforced
+          via code-coverage threshold gates in CI
+        gcp: >-
+          xUnit + Moq — unit tests per .NET service; white-box (internals-aware) by nature, enforced
+          via code-coverage threshold gates in CI
+        aws: >-
+          xUnit + Moq — unit tests per .NET service; white-box (internals-aware) by nature, enforced
+          via code-coverage threshold gates in CI
+        oss: >-
+          pytest + unittest.mock (Python). Java: JUnit5 + Mockito. Node.js: Jest — unit tests per
+          service; white-box (internals-aware) by nature, enforced via code-coverage threshold gates
+          in CI
+      - title: Playwright
+        all: E2E tests on the Next.js UI
+      - title: Integration Testing
+        azure: >-
+          Tests interactions across service/dependency boundaries — WebApplicationFactory/TestServer
+          (.NET) + Testcontainers for real Postgres/Redis in CI
+        gcp: >-
+          Tests interactions across service/dependency boundaries — WebApplicationFactory/TestServer
+          (.NET) + Testcontainers for real Postgres/Redis in CI
+        aws: >-
+          Tests interactions across service/dependency boundaries — WebApplicationFactory/TestServer
+          (.NET) + Testcontainers for real Postgres/Redis in CI
+        oss: >-
+          pytest + Testcontainers (Python), Testcontainers + JUnit (Java), Testcontainers + Jest
+          (Node.js) — tests interactions across service/dependency boundaries with real Postgres/Redis
+          in CI
+      - title: Contract Testing
+        all: >-
+          Pact (consumer-driven contract testing) — verifies independently-deployed microservices' API
+          contracts don't break each other
+      - title: Black-box / Exploratory Testing
+        all: >-
+          BDD-style acceptance tests (Gherkin/Cucumber/SpecFlow) plus manual exploratory QA pass —
+          spec-driven, no knowledge of internals
+      - title: API / Business-Flow E2E Testing
+        all: >-
+          Postman/Newman (or REST-assured for Java) — full business-flow scenarios executed purely
+          through the API layer (no browser), verifying DB state and event side-effects end-to-end;
+          complements Playwright's UI-driven E2E coverage
+      - title: Defect Tracking
+        azure: >-
+          Azure DevOps Boards / Jira — defect lifecycle (New → Triaged → In Progress → Fixed →
+          Verified → Closed), linked to failing test cases and CI build
+        gcp: >-
+          Jira — defect lifecycle (New → Triaged → In Progress → Fixed → Verified → Closed), linked to
+          failing test cases and CI build
+        aws: >-
+          Jira — defect lifecycle (New → Triaged → In Progress → Fixed → Verified → Closed), linked to
+          failing test cases and CI build
+        oss: >-
+          GitLab Issues / Taiga / OpenProject (open-source) — defect lifecycle tracking linked to
+          failing test cases and CI build
+      - title: Smoke Testing
+        all: >-
+          Shallow, fast sanity check run immediately post-deployment — hits health endpoints and
+          critical user paths (login, checkout) to confirm the build isn't fundamentally broken before
+          running the full test suite or promoting to the next environment
+      - title: Frontend Performance Testing
+        all: >-
+          Lighthouse CI — Core Web Vitals (LCP, INP, CLS) thresholds enforced in CI, distinct from
+          backend load/stress testing (5.2.5)
+  - title: Localization & Accessibility
+    parameters:
+      - title: i18n Framework
+        azure: next-intl — multi-language support across UI
+        gcp: next-intl — multi-language support across UI
+        aws: next-intl — multi-language support across UI
+        oss: >-
+          Babel / gettext (Python), ResourceBundle (Java), i18next (Node.js) — multi-language support
+          across UI/backend
+      - title: l10n
+        all: Date, currency, number format per locale
+      - title: RTL Support
+        all: Arabic, Hebrew layout support
+      - title: Multi-timezone
+        all: All timestamps stored UTC, displayed per user locale
+  - title: Infrastructure & Cost
+    parameters:
+      - title: Container Registry
+        azure: Docker + Azure Container Registry (ACR) — every service as a versioned container image
+        gcp: Docker + Google Artifact Registry — every service as a versioned container image
+        aws: Docker + Amazon ECR — every service as a versioned container image
+        oss: Docker + Harbor (open-source registry) — every service as a versioned container image
+      - title: Container Runtime Platform
+        azure: >-
+          Azure Container Apps — serverless, scale-to-zero, no node/cluster management; AKS + Helm
+          only if you need full Kubernetes API control (custom operators, complex networking,
+          StatefulSets)
+        gcp: >-
+          Cloud Run — serverless, scale-to-zero, no node/cluster management; GKE + Helm only if you
+          need full Kubernetes API control (custom operators, complex networking, StatefulSets)
+        aws: >-
+          AWS Fargate (via App Runner or ECS Fargate) — serverless, scale-to-zero, no node/cluster
+          management; EKS + Helm only if you need full Kubernetes API control (custom operators,
+          complex networking, StatefulSets)
+        oss: >-
+          Knative (open-source, serverless-on-Kubernetes — the same tech Cloud Run is built on) —
+          scale-to-zero without direct node management; self-managed Kubernetes + Helm only if you
+          need full K8s API control
+      - title: CI/CD Pipeline
+        azure: Azure DevOps Pipelines — build, scan, push, deploy per service
+        gcp: Google Cloud Build — build, scan, push, deploy per service
+        aws: AWS CodePipeline / CodeBuild — build, scan, push, deploy per service
+        oss: GitLab CI / Jenkins / Tekton (open-source) — build, scan, push, deploy per service
+      - title: Terraform
+        azure: Infrastructure as code for all Azure resources
+        gcp: Infrastructure as code for all GCP resources
+        aws: Infrastructure as code for all AWS resources
+        oss: Infrastructure as code for all cloud resources (cloud-agnostic)
+      - title: Dev/Staging Cost Optimization
+        azure: >-
+          Serverless scale-to-zero (Azure Container Apps) is inherently $0 when idle — no spot/node
+          management needed; Azure Spot Node Pools cut AKS cost 60-90% only if self-managing
+          Kubernetes
+        gcp: >-
+          Serverless scale-to-zero (Cloud Run) is inherently $0 when idle — no spot/node management
+          needed; GKE Spot VMs cut cost 60-90% only if self-managing Kubernetes
+        aws: >-
+          Serverless scale-to-zero (AWS Fargate) is inherently $0 when idle — no spot/node management
+          needed; EC2 Spot Instances cut EKS cost 60-90% only if self-managing Kubernetes
+        oss: >-
+          Serverless scale-to-zero (Knative) is inherently $0 when idle — no spot/node management
+          needed; preemptible/spot nodes cut Kubernetes cost 60-90% only if self-managing a cluster
+  - title: Developer Experience
+    parameters:
+      - title: Docker Compose
+        all: Single command to run all services locally
+      - title: Seed Data
+        all: Reproducible dev data for local and CI environments
+      - title: AI Coding Assistants
+        all: >-
+          Claude Code, GitHub Copilot, Cursor, Codex — AI-assisted code generation, review, and pair
+          programming across IDEs (VS Code, JetBrains/IntelliJ, Visual Studio), subject to company
+          approval
+  - title: Cross-Cell/Service Integration
+    parameters:
+      - title: Micro Cell/Service-Based Architecture
+        all: >-
+          Bounded business-domain service groupings ("cells") with per-cell resilience and independent
+          failure isolation, vs. a single shared platform
+      - title: Inter-Cell/Service Communication Patterns
+        azure: >-
+          Async event-driven (Service Bus pub/sub) vs. sync request-response (API calls) between cells
+          — event-driven preferred for loose coupling
+        gcp: >-
+          Async event-driven (Pub/Sub) vs. sync request-response (API calls) between cells —
+          event-driven preferred for loose coupling
+        aws: >-
+          Async event-driven (SNS/SQS pub/sub) vs. sync request-response (API calls) between cells —
+          event-driven preferred for loose coupling
+        oss: >-
+          Async event-driven (Kafka/RabbitMQ pub/sub) vs. sync request-response (API calls) between
+          cells — event-driven preferred for loose coupling
+      - title: CustomerCreated Event
+        azure: Service Bus → CRM, Marketing, AI services on new customer
+        gcp: Pub/Sub → CRM, Marketing, AI services on new customer
+        aws: SNS/SQS → CRM, Marketing, AI services on new customer
+        oss: Kafka/RabbitMQ → CRM, Marketing, AI services on new customer
+      - title: CustomerUpdated Event
+        azure: Service Bus → Order and Billing services on profile change
+        gcp: Pub/Sub → Order and Billing services on profile change
+        aws: SNS/SQS → Order and Billing services on profile change
+        oss: Kafka/RabbitMQ → Order and Billing services on profile change
+      - title: CustomerDeleted Event
+        azure: Service Bus → all downstream services — GDPR erasure cascade
+        gcp: Pub/Sub → all downstream services — GDPR erasure cascade
+        aws: SNS/SQS → all downstream services — GDPR erasure cascade
+        oss: Kafka/RabbitMQ → all downstream services — GDPR erasure cascade
+      - title: CustomerRead Event
+        azure: Service Bus → Audit trail service — PII access logging for compliance (GDPR/SOC2)
+        gcp: Pub/Sub → Audit trail service — PII access logging for compliance (GDPR/SOC2)
+        aws: SNS/SQS → Audit trail service — PII access logging for compliance (GDPR/SOC2)
+        oss: Kafka/RabbitMQ → Audit trail service — PII access logging for compliance (GDPR/SOC2)
+      - title: ProductCreated Event
+        azure: Service Bus → Catalog search index, Recommendation, Marketing services on new product
+        gcp: Pub/Sub → Catalog search index, Recommendation, Marketing services on new product
+        aws: SNS/SQS → Catalog search index, Recommendation, Marketing services on new product
+        oss: Kafka/RabbitMQ → Catalog search index, Recommendation, Marketing services on new product
+      - title: ProductRead Event
+        azure: Service Bus → Analytics, Recommendation services — product view tracking for demand signals
+        gcp: Pub/Sub → Analytics, Recommendation services — product view tracking for demand signals
+        aws: SNS/SQS → Analytics, Recommendation services — product view tracking for demand signals
+        oss: Kafka/RabbitMQ → Analytics, Recommendation services — product view tracking for demand signals
+      - title: ProductUpdated Event
+        azure: Service Bus → Catalog search index, Pricing, Inventory services on attribute/price/stock change
+        gcp: Pub/Sub → Catalog search index, Pricing, Inventory services on attribute/price/stock change
+        aws: SNS/SQS → Catalog search index, Pricing, Inventory services on attribute/price/stock change
+        oss: Kafka/RabbitMQ → Catalog search index, Pricing, Inventory services on attribute/price/stock change
+      - title: ProductDeleted Event
+        azure: Service Bus → Catalog search index, Recommendation services — remove from search and recommendations
+        gcp: Pub/Sub → Catalog search index, Recommendation services — remove from search and recommendations
+        aws: SNS/SQS → Catalog search index, Recommendation services — remove from search and recommendations
+        oss: >-
+          Kafka/RabbitMQ → Catalog search index, Recommendation services — remove from search and
+          recommendations
+      - title: OrderCreated Event
+        azure: Service Bus → Billing, Fulfillment, Inventory, Analytics services on new order
+        gcp: Pub/Sub → Billing, Fulfillment, Inventory, Analytics services on new order
+        aws: SNS/SQS → Billing, Fulfillment, Inventory, Analytics services on new order
+        oss: Kafka/RabbitMQ → Billing, Fulfillment, Inventory, Analytics services on new order
+      - title: OrderRead Event
+        azure: Service Bus → Audit trail service — order access logging for support and fraud review
+        gcp: Pub/Sub → Audit trail service — order access logging for support and fraud review
+        aws: SNS/SQS → Audit trail service — order access logging for support and fraud review
+        oss: Kafka/RabbitMQ → Audit trail service — order access logging for support and fraud review
+      - title: OrderUpdated Event
+        azure: Service Bus → Fulfillment, Notification services on status/line-item change
+        gcp: Pub/Sub → Fulfillment, Notification services on status/line-item change
+        aws: SNS/SQS → Fulfillment, Notification services on status/line-item change
+        oss: Kafka/RabbitMQ → Fulfillment, Notification services on status/line-item change
+      - title: OrderDeleted Event
+        azure: Service Bus → Billing, Inventory, Fulfillment services — cancellation/refund cascade
+        gcp: Pub/Sub → Billing, Inventory, Fulfillment services — cancellation/refund cascade
+        aws: SNS/SQS → Billing, Inventory, Fulfillment services — cancellation/refund cascade
+        oss: Kafka/RabbitMQ → Billing, Inventory, Fulfillment services — cancellation/refund cascade

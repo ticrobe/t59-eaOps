@@ -1,0 +1,82 @@
+title: Stake Holders
+intro: >-
+  Op 2 covers everyone outside core engineering with a stake in CPO. **2.1 Customer Success** is the
+  external-facing side — status pages, support ticketing, onboarding/UAT flows, sandbox environments,
+  white-labelling, and the client engagement portal for service-delivery clients. **2.2 Executive &
+  Cross-Department Visibility** is the internal reporting side — executive KPI dashboards, weekly
+  digests, a data catalog, and self-service analytics/experimentation for other teams. **2.3 Skill &
+  Resource Management** is the staffing side — a skills matrix, hiring-gap analysis, and training
+  budget, following the same build-vs-buy fork applied to people instead of software.
+functions:
+  - title: Customer Success
+    parameters:
+      - title: Status Page
+        azure: Public uptime page — statuspage.io or Azure Service Health
+        gcp: Public uptime page — statuspage.io or Google Cloud Service Health
+        aws: Public uptime page — statuspage.io or AWS Service Health Dashboard
+        oss: Public uptime page — Cachet / Gatus (open-source, self-hosted)
+      - title: Support Ticketing
+        azure: Zendesk / ServiceNow integration — customer issues to dev pipeline
+        gcp: Zendesk / ServiceNow integration — customer issues to dev pipeline
+        aws: Zendesk / ServiceNow integration — customer issues to dev pipeline
+        oss: Zammad / osTicket (open-source) — customer issues to dev pipeline
+      - title: In-app Feedback
+        all: Feedback widget — users report issues or request features in context
+      - title: Customer Onboarding Flow
+        all: Guided setup — account creation, first customer record, first AI call
+      - title: UAT Process
+        all: User Acceptance Testing with real customers before major release
+      - title: Beta / Early Access Program
+        all: Selected customers test new AI features before GA
+      - title: Demo / Sandbox Environment
+        all: Isolated environment for sales demos — pre-loaded with sample data
+      - title: White-labelling
+        all: Custom branding per enterprise customer — logo, colours, domain
+      - title: Client Engagement Portal
+        all: Self-service portal — project milestones, deliverables, hours burned, invoices per client engagement
+  - title: Executive & Cross-Department Visibility
+    parameters:
+      - title: Executive KPI Dashboard
+        azure: Power BI — uptime vs SLA, AI cost, customer growth, tier mix
+        gcp: Looker Studio — uptime vs SLA, AI cost, customer growth, tier mix
+        aws: Amazon QuickSight — uptime vs SLA, AI cost, customer growth, tier mix
+        oss: Metabase / Apache Superset (open-source BI) — uptime vs SLA, AI cost, customer growth, tier mix
+      - title: Executive Weekly Digest
+        azure: Azure Monitor scheduled alert → email to CTO/CISO/CDO group
+        gcp: Cloud Monitoring scheduled alert → email to CTO/CISO/CDO group
+        aws: Amazon CloudWatch scheduled alert → email to CTO/CISO/CDO group
+        oss: Prometheus Alertmanager / Grafana scheduled report → email to CTO/CISO/CDO group
+      - title: Internal Comms Integration
+        azure: Service Bus platform-events → Logic Apps → Teams / Slack
+        gcp: Pub/Sub platform-events → Workflows → Teams / Slack
+        aws: Amazon EventBridge platform-events → Step Functions → Teams / Slack
+        oss: Kafka/RabbitMQ platform-events → n8n (open-source automation) → Teams / Slack
+      - title: Data Catalog
+        azure: Microsoft Purview — register all Customer data assets
+        gcp: Dataplex Catalog — register all Customer data assets
+        aws: AWS Glue Data Catalog — register all Customer data assets
+        oss: OpenMetadata / Amundsen (open-source data catalog) — register all Customer data assets
+      - title: Self-Service Analytics
+        azure: Power BI + Synapse read-only endpoint + Analytics.Reader role
+        gcp: Looker Studio + BigQuery read-only endpoint + IAM viewer role
+        aws: Amazon QuickSight + Redshift read-only endpoint + IAM read-only role
+        oss: Apache Superset + read-only DB endpoint + role-based access
+      - title: A/B Experiment Framework
+        azure: Feature flags + App Insights ExperimentEvaluated event + Power BI
+        gcp: Feature flags + BigQuery event tracking + Looker Studio
+        aws: Feature flags + CloudWatch event tracking + Amazon QuickSight
+        oss: GrowthBook / Unleash (open-source) + custom event tracking + Superset
+  - title: Skill & Resource Management
+    parameters:
+      - title: Skills Matrix
+        all: Team coverage across stack layers
+      - title: Hiring Gap Analysis
+        all: >-
+          Identify which skills are scarce vs available in local market — feeds the
+          outsource-vs-in-house decision: close the gap via Training Budget (build) or a
+          vendor/contractor engagement per Build vs. Buy Analysis (buy).
+      - title: Training Budget
+        azure: Per-technology learning paths mapped to stack (Azure certs, etc.)
+        gcp: Per-technology learning paths mapped to stack (Google Cloud certs, etc.)
+        aws: Per-technology learning paths mapped to stack (AWS certs, etc.)
+        oss: Per-technology learning paths mapped to stack (Python/OSS certs, community courses, etc.)

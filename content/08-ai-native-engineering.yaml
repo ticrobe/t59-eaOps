@@ -1,0 +1,502 @@
+title: AI-Native Engineering
+intro: >-
+  Where Op 7 is about touching AI onto legacy systems, Op 8 is the AI stack itself. **8.1 AI
+  Services** is the app-facing layer — the SDK/agent code calls (8.1.1–8.1.6, single- and multi-agent)
+  plus the safety and quality gates around them (AI Guardrails, AI Red Teaming, Prompt Versioning, AI
+  Evals, Prompt Sanitization — 8.1.7–8.1.11). **8.2 AI Platform** is what backs those calls — the
+  model, search/RAG, storage, and OCR services. **8.3 AI Capacity & Governance** is the operational
+  layer on top — capacity reservations, quota/region planning, model lifecycle tracking, network
+  isolation, data residency, and human-in-the-loop override controls. **8.4 Responsible AI** is the
+  ethics/fairness layer, distinct from 8.3's ops governance — bias testing, explainability
+  documentation, user-facing transparency disclosure, and a review-board/impact-assessment gate for
+  high-risk AI features before they ship. **8.5 AI DevOps & Delivery Pipeline** is how AI changes
+  actually ship — continuous security monitoring (AISecOps), a prompt/model-aware CI/CD pipeline,
+  tracing/debugging, a dev sandbox, human QA review, and canary/shadow rollout with auto-rollback.
+  **8.6 AI Deployment & Channels** is where the shipped AI capability actually runs and how users
+  reach it — inference pattern, multi-region deployment, and the delivery surfaces (in-app, chat
+  platforms, voice/IVR, partner API). **8.7 CPO Multi-Agent Workflow** puts it all together as a
+  worked example, using the Agent → Skill → Tool pattern: a Customer, Product, and Order Agent
+  (8.7.1–8.7.3), the Skills they share instead of reimplement (8.7.4), and two complementary
+  coordination paths — async, driven by the 6.12 CRUD events (8.7.5), and sync, via a top-level
+  orchestrator (8.7.6).
+functions:
+  - title: AI Services
+    parameters:
+      - title: AI Service
+        azure: Semantic Kernel (.NET) — summarize, generate, PII detect, translate, backed by Azure OpenAI
+        gcp: Semantic Kernel (.NET) — summarize, generate, PII detect, translate, backed by Vertex AI
+        aws: Semantic Kernel (.NET) — summarize, generate, PII detect, translate, backed by Amazon Bedrock
+        oss: Python + LangChain/LlamaIndex — summarize, generate, PII detect, translate
+      - title: Agentic AI
+        azure: LangChain + LangGraph + CrewAI — tool calling, memory, multi-agent orchestration
+        gcp: LangChain + LangGraph + CrewAI — tool calling, memory, multi-agent orchestration
+        aws: LangChain + LangGraph + CrewAI — tool calling, memory, multi-agent orchestration
+        oss: >-
+          Already Python-native — LangChain + LangGraph + CrewAI — tool calling, memory, multi-agent
+          orchestration
+      - title: Multi-Agent Workflow
+        azure: >-
+          LangGraph / CrewAI multi-agent graphs — orchestrator-worker, routing, and parallelization
+          patterns for coordinating multiple specialized agents on one task (communication layer:
+          8.1.5 Agent Choreography) — distinct from 8.1.2 Agentic AI's single-agent tool-use loop
+        gcp: >-
+          LangGraph / CrewAI multi-agent graphs — orchestrator-worker, routing, and parallelization
+          patterns for coordinating multiple specialized agents on one task (communication layer:
+          8.1.5 Agent Choreography) — distinct from 8.1.2 Agentic AI's single-agent tool-use loop
+        aws: >-
+          LangGraph / CrewAI multi-agent graphs — orchestrator-worker, routing, and parallelization
+          patterns for coordinating multiple specialized agents on one task (communication layer:
+          8.1.5 Agent Choreography) — distinct from 8.1.2 Agentic AI's single-agent tool-use loop
+        oss: >-
+          Already Python-native — LangGraph / CrewAI multi-agent graphs — orchestrator-worker,
+          routing, and parallelization patterns for coordinating multiple specialized agents on one
+          task (communication layer: 8.1.5 Agent Choreography) — distinct from 8.1.2 Agentic AI's
+          single-agent tool-use loop
+      - title: Agent Interoperability Protocols
+        all: MCP (tool/context standardization) + A2A (cross-framework agent communication)
+      - title: Agent Choreography
+        azure: >-
+          Decentralized, event-driven agent coordination via Service Bus — agents react independently
+          vs. centrally orchestrated
+        gcp: >-
+          Decentralized, event-driven agent coordination via Pub/Sub — agents react independently vs.
+          centrally orchestrated
+        aws: >-
+          Decentralized, event-driven agent coordination via SNS/SQS — agents react independently vs.
+          centrally orchestrated
+        oss: >-
+          Decentralized, event-driven agent coordination via Kafka/RabbitMQ — agents react
+          independently vs. centrally orchestrated
+      - title: MicroAgent Pattern
+        all: >-
+          Small, single-purpose, independently deployable agents composed together — the same
+          decomposition principle as 6.12.1 Micro Cell/Service-Based Architecture, applied to AI
+          agents
+      - title: AI Guardrails
+        azure: >-
+          Azure AI Content Safety — blocks harmful/jailbreak prompts and filters unsafe generated
+          content, including prompt injection
+        gcp: >-
+          Vertex AI safety filters — blocks harmful/jailbreak prompts and filters unsafe generated
+          content, including prompt injection
+        aws: >-
+          Amazon Bedrock Guardrails — blocks harmful/jailbreak prompts and filters unsafe generated
+          content, including prompt injection
+        oss: >-
+          Guardrails AI / NeMo Guardrails (open-source) — blocks harmful/jailbreak prompts and filters
+          unsafe generated content, including prompt injection
+      - title: AI Red Teaming
+        azure: >-
+          Adversarial testing for jailbreaks, prompt injection, and agent exploit chains — validates
+          AI Guardrails coverage before production; complements 5.4.8 Red Team / Blue Team's
+          infrastructure-focused exercises
+        gcp: >-
+          Adversarial testing for jailbreaks, prompt injection, and agent exploit chains — validates
+          AI Guardrails coverage before production; complements 5.4.8 Red Team / Blue Team's
+          infrastructure-focused exercises
+        aws: >-
+          Adversarial testing for jailbreaks, prompt injection, and agent exploit chains — validates
+          AI Guardrails coverage before production; complements 5.4.8 Red Team / Blue Team's
+          infrastructure-focused exercises
+        oss: >-
+          garak / PyRIT (open-source LLM red-teaming) — adversarial testing for jailbreaks, prompt
+          injection, and agent exploit chains; complements 5.4.8 Red Team / Blue Team's
+          infrastructure-focused exercises
+      - title: Prompt Versioning
+        azure: Azure PromptFlow — version, test, A/B test, and compare prompts across eval pipelines
+        gcp: Vertex AI prompt management — version, test, A/B test, and compare prompts across eval pipelines
+        aws: >-
+          Amazon Bedrock prompt management — version, test, A/B test, and compare prompts across eval
+          pipelines
+        oss: >-
+          Langfuse / PromptLayer (open-source) — version, test, A/B test, and compare prompts across
+          eval pipelines
+      - title: AI Evals
+        azure: Automated quality scoring of LLM outputs per prompt version
+        gcp: Automated quality scoring of LLM outputs per prompt version
+        aws: Automated quality scoring of LLM outputs per prompt version
+        oss: Ragas / DeepEval (open-source) — automated quality scoring of LLM outputs per prompt version
+      - title: Prompt Sanitization
+        azure: >-
+          Azure AI Prompt Shields — detects and blocks direct and indirect prompt injection in user
+          input and third-party content (documents, tool outputs, RAG chunks) before it reaches the
+          model; the input-side control that 8.1.7 AI Guardrails' output/content classification
+          complements
+        gcp: >-
+          Model Armor — detects and blocks direct and indirect prompt injection in user input and
+          third-party content (documents, tool outputs, RAG chunks) before it reaches the model; the
+          input-side control that 8.1.7 AI Guardrails' output/content classification complements
+        aws: >-
+          Amazon Bedrock Guardrails (prompt attack filters) — detects and blocks direct and indirect
+          prompt injection in user input and third-party content (documents, tool outputs, RAG chunks)
+          before it reaches the model; the input-side control that 8.1.7 AI Guardrails' output/content
+          classification complements
+        oss: >-
+          Rebuff / LLM Guard (open-source) + structured system/user role separation — detects and
+          blocks direct and indirect prompt injection in user input and third-party content before it
+          reaches the model; the input-side control that 8.1.7 AI Guardrails' output/content
+          classification complements
+  - title: AI Platform
+    parameters:
+      - title: LLM Backend
+        azure: Azure OpenAI (GPT-4o) — LLM backend for all AI features
+        gcp: Vertex AI (Gemini models) — LLM backend for all AI features
+        aws: Amazon Bedrock — LLM backend for all AI features
+        oss: Open-weight models (Llama, Mistral, Qwen) via vLLM/Ollama — LLM backend for all AI features
+      - title: Model Router
+        azure: >-
+          Dynamic per-request model selection (GPT-4o vs. SLM vs. others) based on task complexity,
+          cost, and latency budget
+        gcp: >-
+          Dynamic per-request model selection (Gemini vs. SLM vs. others) based on task complexity,
+          cost, and latency budget
+        aws: >-
+          Dynamic per-request model selection (Bedrock model vs. SLM vs. others) based on task
+          complexity, cost, and latency budget
+        oss: >-
+          LiteLLM Router (open-source) — dynamic per-request model selection based on task complexity,
+          cost, and latency budget
+      - title: Semantic/Hybrid Search (RAG)
+        azure: Azure AI Search — semantic + hybrid search, RAG pipeline
+        gcp: Vertex AI Search — semantic + hybrid search, RAG pipeline
+        aws: Amazon OpenSearch Service (vector engine) — semantic + hybrid search, RAG pipeline
+        oss: Weaviate / Qdrant / Milvus (open-source) — semantic + hybrid search, RAG pipeline
+      - title: Multimodal RAG
+        azure: >-
+          Retrieval over mixed content (text, images, tables, charts, audio, video) via multimodal
+          embeddings + GPT-4o vision, Azure AI Speech (audio transcription), Azure AI Video Indexer
+          (video scene/frame understanding), vs. text-only RAG
+        gcp: >-
+          Retrieval over mixed content (text, images, tables, charts, audio, video) via multimodal
+          embeddings + Gemini's native audio/video understanding (no separate transcription step
+          needed), vs. text-only RAG
+        aws: >-
+          Retrieval over mixed content (text, images, tables, charts, audio, video) via multimodal
+          embeddings + Amazon Bedrock vision models, Amazon Transcribe (audio), Amazon Rekognition
+          Video (video scene/frame understanding), vs. text-only RAG
+        oss: >-
+          Retrieval over mixed content (text, images, tables, charts, audio, video) via CLIP
+          embeddings + open-weight vision models (LLaVA), Whisper (audio transcription), and
+          frame-sampling for video, vs. text-only RAG
+      - title: Document/File Storage
+        azure: Azure Blob Storage — document and file storage
+        gcp: Google Cloud Storage — document and file storage
+        aws: Amazon S3 — document and file storage
+        oss: MinIO (open-source S3-compatible) — document and file storage
+      - title: Document OCR & Extraction
+        azure: Azure Document Intelligence — OCR, form extraction from uploaded files
+        gcp: Google Cloud Document AI — OCR, form extraction from uploaded files
+        aws: Amazon Textract — OCR, form extraction from uploaded files
+        oss: Tesseract / docTR (open-source OCR) — form extraction from uploaded files
+      - title: Local Vector Store (Dev)
+        all: Chroma — local vector store for dev without cloud-hosted search cost
+      - title: Small Language Models (SLM) / Edge AI
+        azure: >-
+          Phi (Azure AI Foundry SLM) — on-device/lightweight cost-latency alternative to GPT-4o for
+          select workloads
+        gcp: >-
+          Gemma (Vertex AI SLM) — on-device/lightweight cost-latency alternative to Gemini for select
+          workloads
+        aws: >-
+          Smaller Amazon Bedrock models (e.g. Titan Lite) — on-device/lightweight cost-latency
+          alternative for select workloads
+        oss: >-
+          Open-weight SLMs (Phi, Gemma, Qwen) via llama.cpp/Ollama — on-device/lightweight
+          cost-latency alternative
+  - title: AI Capacity & Governance
+    parameters:
+      - title: Reserved AI Throughput Capacity
+        azure: >-
+          Provisioned Throughput Units (PTU) — reserved GPT-4o capacity (dedicated GPU allocation
+          behind Azure's PTU model) vs. pay-as-you-go — cost/latency tradeoff
+        gcp: >-
+          Vertex AI Provisioned Throughput — reserved Gemini capacity vs. pay-as-you-go — cost/latency
+          tradeoff
+        aws: >-
+          Amazon Bedrock Provisioned Throughput — reserved model capacity vs. pay-as-you-go —
+          cost/latency tradeoff
+        oss: >-
+          Self-hosted GPU capacity reservation (dedicated GPU node pools — see 3.1.6 Self-Hosted GPU
+          Infrastructure) vs. pay-per-token API — cost/latency tradeoff
+      - title: Quota & Region Strategy
+        azure: TPM/RPM quota planning per model per Azure region
+        gcp: Quota planning per model per Google Cloud region
+        aws: Quota planning per model per AWS region
+        oss: Rate-limit/quota planning per model per self-hosted region/cluster
+      - title: Model Lifecycle Management
+        azure: Track Azure OpenAI model deprecations, plan version upgrades
+        gcp: Track Vertex AI model deprecations, plan version upgrades
+        aws: Track Amazon Bedrock model deprecations, plan version upgrades
+        oss: Track open-weight model version deprecations (Hugging Face Hub), plan version upgrades
+      - title: Private Network Endpoint
+        azure: Azure Private Endpoint + VNet — Azure OpenAI traffic kept off the public internet
+        gcp: Private Service Connect + VPC — Vertex AI traffic kept off the public internet
+        aws: AWS PrivateLink + VPC — Amazon Bedrock traffic kept off the public internet
+        oss: >-
+          Self-hosted inference kept off the public internet (private Kubernetes cluster networking —
+          see 3.1.6 exception to serverless-first)
+      - title: Data Residency Mapping
+        azure: Which Azure region processes AI requests, per compliance need
+        gcp: Which Google Cloud region processes AI requests, per compliance need
+        aws: Which AWS region processes AI requests, per compliance need
+        oss: Which self-hosted region/cluster processes AI requests, per compliance need
+      - title: Human-in-the-Loop Governance
+        all: >-
+          Override / Escalate / Explain / Execution-boundary controls — avoid rubber-stamp AI review;
+          the general governance framework that 7.2.4 Human-in-the-Loop Escalation's migration-cutover
+          confidence routing is one instance of
+  - title: Responsible AI
+    parameters:
+      - title: Bias & Fairness Testing
+        azure: >-
+          Azure AI Foundry fairness dashboard — pre-production and ongoing testing of model outputs
+          for demographic/protected-class bias
+        gcp: >-
+          Vertex AI Fairness Indicators — pre-production and ongoing testing of model outputs for
+          demographic/protected-class bias
+        aws: >-
+          Amazon SageMaker Clarify — pre-production and ongoing testing of model outputs for
+          demographic/protected-class bias
+        oss: >-
+          Fairlearn (open-source) — pre-production and ongoing testing of model outputs for
+          demographic/protected-class bias
+      - title: Explainability & Model Cards
+        all: >-
+          Documented capabilities, limitations, and training-data provenance per model — the
+          design-time counterpart to 8.3.6 Human-in-the-Loop Governance's runtime "Explain" control
+      - title: AI Transparency Disclosure
+        azure: >-
+          End-user-facing labeling that they are interacting with AI (chatbot disclosure) and
+          watermarking/labeling of AI-generated content, via Azure AI Content Credentials
+        gcp: >-
+          End-user-facing labeling that they are interacting with AI (chatbot disclosure) and
+          watermarking/labeling of AI-generated content, via Google SynthID
+        aws: >-
+          End-user-facing labeling that they are interacting with AI (chatbot disclosure) and
+          watermarking/labeling of AI-generated content, via Amazon Bedrock watermarking
+        oss: >-
+          End-user-facing labeling that they are interacting with AI (chatbot disclosure) and
+          watermarking/labeling of AI-generated content, via C2PA (open content-provenance standard)
+      - title: Responsible AI Review Board
+        all: >-
+          Cross-functional (legal, ethics, security) sign-off gate for high-risk AI features before
+          ship — the AI-specific analog to 4.2.8 Architecture Review Board
+      - title: AI Impact Assessment
+        all: >-
+          Pre-launch risk/impact assessment for high-risk AI use cases (EU AI Act conformity-style,
+          DPIA-equivalent for AI) — required before 8.4.4 Responsible AI Review Board sign-off
+  - title: AI DevOps & Delivery Pipeline
+    parameters:
+      - title: AISecOps
+        azure: >-
+          Continuous OWASP LLM Top-10 vulnerability scanning + model/prompt supply-chain provenance
+          tracking + AI asset inventory (models, prompts, agents in production), via Microsoft
+          Defender for Cloud AI security posture management
+        gcp: >-
+          Continuous OWASP LLM Top-10 vulnerability scanning + model/prompt supply-chain provenance
+          tracking + AI asset inventory (models, prompts, agents in production), via Google Security
+          Command Center AI protection
+        aws: >-
+          Continuous OWASP LLM Top-10 vulnerability scanning + model/prompt supply-chain provenance
+          tracking + AI asset inventory (models, prompts, agents in production), via Amazon GuardDuty
+          + Bedrock security controls
+        oss: >-
+          Continuous OWASP LLM Top-10 vulnerability scanning + model/prompt supply-chain provenance
+          tracking + AI asset inventory, via open-source SBOM tooling (in-toto, Syft) adapted for
+          model/prompt artifacts
+      - title: AI CI/CD Pipeline
+        azure: >-
+          Prompt/model artifacts versioned and promoted (dev→staging→prod) through Azure DevOps
+          Pipelines, gated by 8.1.10 AI Evals — blocks promotion on quality/eval regression; extends
+          6.10.3 CI/CD Pipeline rather than replacing it
+        gcp: >-
+          Prompt/model artifacts versioned and promoted (dev→staging→prod) through Google Cloud Build,
+          gated by 8.1.10 AI Evals — blocks promotion on quality/eval regression; extends 6.10.3 CI/CD
+          Pipeline rather than replacing it
+        aws: >-
+          Prompt/model artifacts versioned and promoted (dev→staging→prod) through AWS
+          CodePipeline/CodeBuild, gated by 8.1.10 AI Evals — blocks promotion on quality/eval
+          regression; extends 6.10.3 CI/CD Pipeline rather than replacing it
+        oss: >-
+          Prompt/model artifacts versioned and promoted (dev→staging→prod) through GitLab CI / Jenkins
+          / Tekton (open-source), gated by 8.1.10 AI Evals — blocks promotion on quality/eval
+          regression; extends 6.10.3 CI/CD Pipeline rather than replacing it
+      - title: AI Observability & Tracing
+        azure: >-
+          LLM call-level tracing, token-level debugging, and agent step replay via Azure AI Foundry
+          tracing — distinct from 6.7.1 Distributed Tracing's request/exception-level APM
+        gcp: >-
+          LLM call-level tracing, token-level debugging, and agent step replay via Vertex AI tracing —
+          distinct from 6.7.1 Distributed Tracing's request/exception-level APM
+        aws: >-
+          LLM call-level tracing, token-level debugging, and agent step replay via Amazon Bedrock
+          model invocation logging — distinct from 6.7.1 Distributed Tracing's request/exception-level
+          APM
+        oss: >-
+          LLM call-level tracing, token-level debugging, and agent step replay via Langfuse /
+          LangSmith (open-source LLM tracing) — distinct from 6.7.1 Distributed Tracing's
+          request/exception-level APM
+      - title: AI Developer Sandbox
+        azure: >-
+          Azure AI Foundry Playground — local prompt/agent iteration before a change enters the 8.5.2
+          AI CI/CD Pipeline
+        gcp: Vertex AI Studio — local prompt/agent iteration before a change enters the 8.5.2 AI CI/CD Pipeline
+        aws: >-
+          Amazon Bedrock Playground — local prompt/agent iteration before a change enters the 8.5.2 AI
+          CI/CD Pipeline
+        oss: >-
+          Jupyter + Langfuse Playground / Ollama local chat (open-source) — local prompt/agent
+          iteration before a change enters the 8.5.2 AI CI/CD Pipeline
+      - title: AI QA & Human Review Workflow
+        azure: >-
+          Azure AI Foundry human feedback loop — sample-review queues and labeling tooling for human
+          QA of AI output, complementing 8.1.10 AI Evals' automated scoring
+        gcp: >-
+          Vertex AI human evaluation — sample-review queues and labeling tooling for human QA of AI
+          output, complementing 8.1.10 AI Evals' automated scoring
+        aws: >-
+          Amazon SageMaker Ground Truth — sample-review queues and labeling tooling for human QA of AI
+          output, complementing 8.1.10 AI Evals' automated scoring
+        oss: >-
+          Label Studio (open-source) — sample-review queues and labeling tooling for human QA of AI
+          output, complementing 8.1.10 AI Evals' automated scoring
+      - title: Canary / Shadow Deployment for Model & Prompt Versions
+        azure: >-
+          Controlled rollout of new model/prompt versions via Azure App Configuration feature flags +
+          8.2.2 Model Router, with automatic rollback on eval or drift regression — the
+          general-purpose version of 7.2.2 Parallel-Run/Shadow Validation's migration-specific cutover
+        gcp: >-
+          Controlled rollout of new model/prompt versions via Firebase Remote Config / Parameter
+          Manager + 8.2.2 Model Router, with automatic rollback on eval or drift regression — the
+          general-purpose version of 7.2.2 Parallel-Run/Shadow Validation's migration-specific cutover
+        aws: >-
+          Controlled rollout of new model/prompt versions via AWS AppConfig + 8.2.2 Model Router, with
+          automatic rollback on eval or drift regression — the general-purpose version of 7.2.2
+          Parallel-Run/Shadow Validation's migration-specific cutover
+        oss: >-
+          Controlled rollout of new model/prompt versions via Unleash/Flagsmith + 8.2.2 Model Router,
+          with automatic rollback on eval or drift regression — the general-purpose version of 7.2.2
+          Parallel-Run/Shadow Validation's migration-specific cutover
+      - title: AI-Native IDE & Coding Assistant Integration
+        all: >-
+          Same coding assistants as 6.11.3 (Claude Code, GitHub Copilot, Cursor, Codex), applied to
+          AI-feature development specifically — inline codebase-aware agent execution, multi-file
+          agentic edits, and direct integration with 8.5.4 AI Developer Sandbox to test prompt/agent
+          changes without leaving the IDE
+  - title: AI Deployment & Channels
+    parameters:
+      - title: Inference Deployment Pattern
+        azure: >-
+          Real-time/synchronous endpoint (Azure OpenAI standard deployment) vs. async/batch inference
+          (Azure OpenAI Batch API) — chosen per workload latency/cost tradeoff
+        gcp: >-
+          Vertex AI Online Prediction (real-time/synchronous) vs. Vertex AI Batch Prediction
+          (async/batch) — chosen per workload latency/cost tradeoff
+        aws: >-
+          Amazon Bedrock real-time inference (synchronous) vs. Bedrock Batch inference (async/batch) —
+          chosen per workload latency/cost tradeoff
+        oss: >-
+          vLLM/Ollama synchronous serving vs. offline batch scoring jobs — chosen per workload
+          latency/cost tradeoff
+      - title: Multi-Region AI Deployment
+        azure: >-
+          Active-active or active-passive AI endpoint deployment across regions — builds on 8.3.2
+          Quota & Region Strategy (capacity per region) and 8.3.5 Data Residency Mapping
+          (compliance-driven region choice)
+        gcp: >-
+          Active-active or active-passive AI endpoint deployment across regions — builds on 8.3.2
+          Quota & Region Strategy (capacity per region) and 8.3.5 Data Residency Mapping
+          (compliance-driven region choice)
+        aws: >-
+          Active-active or active-passive AI endpoint deployment across regions — builds on 8.3.2
+          Quota & Region Strategy (capacity per region) and 8.3.5 Data Residency Mapping
+          (compliance-driven region choice)
+        oss: >-
+          Active-active or active-passive AI endpoint deployment across regions/clusters — builds on
+          8.3.2 Quota & Region Strategy (capacity per region) and 8.3.5 Data Residency Mapping
+          (compliance-driven region choice)
+      - title: In-App AI Channel
+        all: >-
+          Embedded chat/copilot widget inside the CPO product itself (web, mobile, desktop — see 6.2
+          Client Platform Coverage), calling 8.1.1 AI Service directly
+      - title: Conversational Platform Channels
+        azure: >-
+          Bot Framework / Azure Communication Services — Slack, Microsoft Teams, WhatsApp, SMS bot
+          integrations for the same AI agent backend
+        gcp: >-
+          Dialogflow CX + Twilio — Slack, Microsoft Teams, WhatsApp, SMS bot integrations for the same
+          AI agent backend
+        aws: >-
+          Amazon Lex + Amazon Pinpoint — Slack, Microsoft Teams, WhatsApp, SMS bot integrations for
+          the same AI agent backend
+        oss: >-
+          Botpress (open-source bot framework) + Twilio — Slack, Microsoft Teams, WhatsApp, SMS bot
+          integrations for the same AI agent backend
+      - title: Voice/IVR AI Channel
+        azure: Azure Communication Services Call Automation + Azure AI Speech — voice/IVR-based AI interaction
+        gcp: >-
+          Dialogflow CX (voice agent) + Google Cloud Speech-to-Text/Text-to-Speech — voice/IVR-based
+          AI interaction
+        aws: Amazon Connect + Amazon Lex — voice/IVR-based AI interaction
+        oss: >-
+          Asterisk / FreeSWITCH (open-source telephony) + Whisper (speech-to-text) — voice/IVR-based
+          AI interaction
+      - title: API/Programmatic AI Channel
+        azure: >-
+          AI capability exposed as a callable API for partners via YARP (6.3.1 API Gateway) + Azure
+          API Management, following the 7.1.3 API-fication pattern
+        gcp: >-
+          AI capability exposed as a callable API for partners via Apigee (6.3.1 API Gateway),
+          following the 7.1.3 API-fication pattern
+        aws: >-
+          AI capability exposed as a callable API for partners via Amazon API Gateway (6.3.1 API
+          Gateway), following the 7.1.3 API-fication pattern
+        oss: >-
+          AI capability exposed as a callable API for partners via Traefik/Kong (6.3.1 API Gateway),
+          following the 7.1.3 API-fication pattern
+  - title: CPO Multi-Agent Workflow
+    parameters:
+      - title: Customer Agent
+        all: >-
+          Domain agent scoped to the Customer entity, built on 8.1.1 AI Service + 8.2.1 LLM Backend.
+          *Profile Management* Skill: get_customer / update_customer tools (wrap 6.4.3 Customer API,
+          publish 6.12.4 CustomerUpdated). *Consent & Privacy* Skill: request_erasure tool (→ 6.12.5
+          CustomerDeleted, GDPR-gated), check_consent tool. All tool calls composed through 8.7.4
+          Shared Agent Skills
+      - title: Product Agent
+        all: >-
+          Domain agent scoped to the Product entity, built on 8.1.1 AI Service + 8.2.1 LLM Backend.
+          *Catalog & Discovery* Skill: search_catalog / get_product tools (wrap 6.4.4 Product API,
+          publish 6.12.8 ProductRead), recommend_products tool (built on 8.2.3 Semantic/Hybrid Search
+          RAG). *Merchandising* Skill: update_price_or_stock tool (→ 6.12.9 ProductUpdated). All tool
+          calls composed through 8.7.4 Shared Agent Skills
+      - title: Order Agent
+        all: >-
+          Domain agent scoped to the Order entity, built on 8.1.1 AI Service + 8.2.1 LLM Backend.
+          *Order Lifecycle* Skill: place_order tool (→ 6.12.11 OrderCreated), get_order_status tool (→
+          6.12.12 OrderRead), update_order tool (→ 6.12.13 OrderUpdated). *Returns & Refunds* Skill:
+          cancel_or_refund_order tool (→ 6.12.14 OrderDeleted). All tool calls composed through 8.7.4
+          Shared Agent Skills
+      - title: Shared Agent Skills
+        all: >-
+          Cross-cutting Skills every domain agent (8.7.1–8.7.3) composes rather than reimplementing:
+          *Identity & Access* (wraps 6.4.7 Identity API — authenticates/authorizes the caller behind
+          each tool call), *Audit Logging* (wraps 6.4.6 Audit API — logs every tool invocation),
+          *Safety* (wraps 8.1.7 AI Guardrails + 8.1.11 Prompt Sanitization on every inbound request),
+          *Approval* (wraps 8.3.6 Human-in-the-Loop Governance — routes high-risk tool calls, e.g.
+          large refunds, to a human reviewer before execution)
+      - title: Event-Driven Multi-Agent Workflow
+        all: >-
+          The CPO CRUD events (6.12.3–6.12.14) are the async coordination bus between agents, per
+          8.1.5 Agent Choreography — no direct agent-to-agent calls. Example: Order Agent's
+          place_order tool publishes 6.12.11 OrderCreated; Customer Agent subscribes and reacts by
+          re-evaluating loyalty tier within its Profile Management Skill, fully decoupled from the
+          Order Agent's request/response cycle
+      - title: CPO Orchestrator Agent
+        all: >-
+          The top-level agent a channel (8.6) actually talks to; synchronously routes one user request
+          across 8.7.1–8.7.3's domain agents and their Skills using 8.1.3 Multi-Agent Workflow
+          (orchestrator-worker pattern) + 8.2.2 Model Router — complements 8.7.5's async event path
+          rather than replacing it. Worked example: "where's my order, and can I get a discount on my
+          next one?" routes to Order Agent (get_order_status), Product Agent (recommend_products), and
+          Customer Agent (check loyalty tier) in parallel, then composes one reply

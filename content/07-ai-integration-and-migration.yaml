@@ -1,0 +1,150 @@
+title: AI Integration & Migration
+intro: >-
+  Op 7 splits it into three paths: **7.1 AI-Legacy Integration** bolts AI onto the legacy system from
+  outside — a sidecar/facade wraps it (7.1.1), a CDC pipeline feeds its quality-checked, PII-redacted
+  data into a vector store for RAG (7.1.2, 7.1.4), and API-fication exposes it via REST/MCP so AI
+  agents can call it as a tool (7.1.3) — none of this touches the legacy code itself. **7.2 AI-Native
+  Migration** is the actual upgrade: the Strangler Fig pattern incrementally swaps out legacy
+  rule-based logic for an ML/LLM reasoning module one piece at a time, guarded by parallel-run
+  validation, a fallback circuit breaker, human-in-the-loop escalation for low-confidence calls, and
+  post-cutover drift monitoring (7.2.2–7.2.5) before the legacy logic is fully replaced. **7.3
+  AI-Assisted Code Migration** is a different axis — using AI coding assistants to accelerate the
+  migration work itself (translating legacy code, generating a golden regression suite, recovering
+  lost documentation), independent of whether the target system ends up AI-native.
+functions:
+  - title: AI-Legacy Integration
+    parameters:
+      - title: AI Sidecar / Facade Pattern
+        azure: >-
+          Wrap a legacy app with an AI layer (Azure API Management facade + Azure AI Service alongside
+          it) without touching legacy internals
+        gcp: >-
+          Wrap a legacy app with an AI layer (Apigee facade + Vertex AI service alongside it) without
+          touching legacy internals
+        aws: >-
+          Wrap a legacy app with an AI layer (Amazon API Gateway facade + Amazon Bedrock service
+          alongside it) without touching legacy internals
+        oss: >-
+          Wrap a legacy app with an AI layer (FastAPI facade + LangChain service alongside it) without
+          touching legacy internals
+      - title: Legacy Data Pipeline for RAG
+        azure: >-
+          Azure Data Factory + CDC — extract from legacy databases (mainframe, on-prem SQL Server,
+          COBOL systems) into Azure AI Search vector store for RAG
+        gcp: >-
+          Cloud Datastream (CDC) + Dataflow — extract from legacy databases (mainframe, on-prem SQL
+          Server, COBOL systems) into Vertex AI Search vector store for RAG
+        aws: >-
+          AWS Database Migration Service (DMS CDC) + Glue — extract from legacy databases (mainframe,
+          on-prem SQL Server, COBOL systems) into Amazon OpenSearch Service (vector engine) for RAG
+        oss: >-
+          Airbyte / Debezium (open-source CDC) — extract from legacy databases into Weaviate/Qdrant
+          vector store for RAG
+      - title: API-fication of Legacy Systems
+        azure: >-
+          Azure API Management + Logic Apps — expose legacy systems via modern REST/MCP so AI agents
+          can call them as tools
+        gcp: >-
+          Apigee + Cloud Workflows — expose legacy systems via modern REST/MCP so AI agents can call
+          them as tools
+        aws: >-
+          Amazon API Gateway + Step Functions — expose legacy systems via modern REST/MCP so AI agents
+          can call them as tools
+        oss: >-
+          Kong/Traefik + FastAPI wrapper — expose legacy systems via modern REST/MCP so AI agents can
+          call them as tools
+      - title: Legacy Data Quality & PII Redaction for AI
+        azure: >-
+          Data quality remediation (dedup, schema normalization) + Azure AI Language PII
+          detection/redaction on legacy data before RAG ingestion or model training
+        gcp: >-
+          Data quality remediation (dedup, schema normalization) + Cloud Data Loss Prevention (DLP)
+          API PII detection/redaction on legacy data before RAG ingestion or model training
+        aws: >-
+          Data quality remediation (dedup, schema normalization) + Amazon Comprehend PII
+          detection/redaction on legacy data before RAG ingestion or model training
+        oss: >-
+          Data quality remediation (dedup, schema normalization) + Microsoft Presidio (open-source)
+          PII detection/redaction on legacy data before RAG ingestion or model training
+  - title: AI-Native Migration (Strangler Fig)
+    parameters:
+      - title: AI-Native Rewrite (Strangler Fig for AI)
+        azure: >-
+          Incrementally replace legacy rule-based/procedural logic with an ML model or LLM-based
+          reasoning module — one legacy module at a time, shadow-mode validation before cutover, via
+          Azure App Configuration feature flags
+        gcp: >-
+          Incrementally replace legacy rule-based/procedural logic with an ML model or LLM-based
+          reasoning module — one legacy module at a time, shadow-mode validation before cutover, via
+          Firebase Remote Config / Parameter Manager feature flags
+        aws: >-
+          Incrementally replace legacy rule-based/procedural logic with an ML model or LLM-based
+          reasoning module — one legacy module at a time, shadow-mode validation before cutover, via
+          AWS AppConfig feature flags
+        oss: >-
+          Incrementally replace legacy rule-based/procedural logic with an ML model or LLM-based
+          reasoning module — one legacy module at a time, shadow-mode validation before cutover, via
+          Unleash/Flagsmith feature flags
+      - title: Parallel-Run / Shadow Validation
+        azure: >-
+          Dual-invoke legacy and AI logic on live traffic, logging both outputs to Application
+          Insights for offline comparison without acting on the AI result — validates accuracy before
+          cutover
+        gcp: >-
+          Dual-invoke legacy and AI logic on live traffic, logging both outputs to Cloud Monitoring
+          for offline comparison without acting on the AI result — validates accuracy before cutover
+        aws: >-
+          Dual-invoke legacy and AI logic on live traffic, logging both outputs to Amazon CloudWatch
+          for offline comparison without acting on the AI result — validates accuracy before cutover
+        oss: >-
+          Dual-invoke legacy and AI logic on live traffic, logging both outputs to Prometheus +
+          Grafana (open-source) for offline comparison without acting on the AI result — validates
+          accuracy before cutover
+      - title: Fallback / Circuit Breaker to Legacy Logic
+        azure: >-
+          Polly circuit breaker routes back to the original rule-based logic when the AI service is
+          unavailable, times out, or returns below-threshold confidence
+        gcp: >-
+          Polly circuit breaker routes back to the original rule-based logic when the AI service is
+          unavailable, times out, or returns below-threshold confidence
+        aws: >-
+          Polly circuit breaker routes back to the original rule-based logic when the AI service is
+          unavailable, times out, or returns below-threshold confidence
+        oss: >-
+          Tenacity / circuitbreaker (Python) circuit breaker routes back to the original rule-based
+          logic when the AI service is unavailable, times out, or returns below-threshold confidence
+      - title: Human-in-the-Loop Escalation
+        all: >-
+          Low-confidence AI decisions (below a defined threshold) route to a human reviewer queue
+          instead of auto-applying — reviewer decision feeds back into the training/tuning loop
+      - title: Post-Cutover Model Drift & Accuracy Monitoring
+        azure: >-
+          Azure Monitor custom metrics tracking AI decision accuracy/drift against ground truth after
+          full cutover from legacy logic
+        gcp: >-
+          Cloud Monitoring custom metrics tracking AI decision accuracy/drift against ground truth
+          after full cutover from legacy logic
+        aws: >-
+          Amazon CloudWatch custom metrics tracking AI decision accuracy/drift against ground truth
+          after full cutover from legacy logic
+        oss: >-
+          Prometheus + Grafana (open-source) custom metrics tracking AI decision accuracy/drift
+          against ground truth after full cutover from legacy logic
+  - title: AI-Assisted Code Migration
+    parameters:
+      - title: AI-Assisted Code Translation
+        all: >-
+          Same AI coding assistants as 6.11.3, directed at translating legacy code (COBOL, mainframe
+          batch jobs, on-prem monoliths) into modern languages/frameworks module-by-module — every
+          generated diff requires human review and passes the golden test suite (7.3.2) before merge
+      - title: AI-Assisted Test Generation (Golden Dataset)
+        all: >-
+          AI generates a regression test suite from legacy system behavior (input/output pairs
+          captured from production traffic or characterization tests) before any rewrite begins — this
+          golden dataset becomes the acceptance bar for both code translation (7.3.1) and Strangler
+          Fig cutover (7.2.1/7.2.2)
+      - title: AI-Assisted Documentation Recovery
+        all: >-
+          AI reverse-engineers and documents undocumented legacy business logic (COBOL copybooks,
+          stored procedures, tribal-knowledge rule engines) prior to migration, producing the
+          functional spec that both the human team and the AI-native rewrite (7.2.1) work from

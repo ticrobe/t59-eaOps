@@ -1,0 +1,34 @@
+name: Vendor line
+description: Improve a Parameter's Azure, GCP, AWS or open-source description
+labels: ["content", "vendor-line"]
+body:
+  - type: input
+    id: parameter
+    attributes:
+      label: Parameter
+      description: Its number and title, e.g. "1.1.9 Chargeback Model".
+    validations:
+      required: true
+  - type: checkboxes
+    id: vendors
+    attributes:
+      label: Which vendors?
+      options:
+        - label: Azure
+        - label: GCP
+        - label: AWS
+        - label: Open source
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed wording
+      description: Name the specific service or tool for each vendor you ticked.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Public source
+      description: A link to the vendor or project documentation.
