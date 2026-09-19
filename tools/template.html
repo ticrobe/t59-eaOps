@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>eaOps {{VERSION}}</title>
+    <script>
+        /* Chrome's headless --print-to-pdf hides collapsed <details> content via an
+           internal content-visibility mechanism that CSS overrides can't reach, and
+           it doesn't switch to print media until after page scripts have already run
+           — so neither @media print CSS nor a matchMedia('print') check works here.
+           Loading this file with ?print=1 forces every <details> open before print. */
+        if (location.search.indexOf('print=1') !== -1) {
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('details').forEach(function (d) { d.open = true; });
+            });
+        }
+
+        /* Smooth expand/collapse for <details>. Native <details> has no animation
+           hook, so this intercepts the summary click, measures the open/closed
+           heights, and animates the <details> element's own height via the Web
+           Animations API — the standard technique (see web.dev's "Building an
+           expand and collapse component"). Each level's non-summary content is
+           wrapped in a div.acc-content so its height can be measured directly. */
+        function Accordion(el) {
+            this.el = el;
+            el._accordion = this;
+            this.summary = el.querySelector(':scope > summary');
+            this.content = el.querySelector(':scope > .acc-content');
+            this.animation = null;
+            this.isClosing = false;
+            this.isExpanding = false;
+            if (this.el.open) this.el.classList.add('acc-open');
+            var self = this;
+            this.summary.addEventListener('click', function (e) { self.onClick(e); });
+            /* Chrome auto-opens a closed <details> on fragment navigation (e.g. a TOC
+               link, or the browser restoring a #op-N URL on reload) by setting the
+               open property directly — bypassing onClick above, so acc-open never
+               gets added and the chevron stays visually closed while content shows.
+               This keeps the icon in sync with open state no matter what caused it. */
+            this.el.addEventListener('toggle', function () {
+                if (self.isClosing || self.isExpanding) return;
+                self.el.classList.toggle('acc-open', self.el.open);
+            });
+        }
+        Accordion.prototype.onClick = function (e) {
+            e.preventDefault();
+            this.el.style.overflow = 'hidden';
+            if (this.isClosing || !this.el.open) {
+                this.open();
+            } else if (this.isExpanding || this.el.open) {
+                this.shrink();
+            }
+        };
+        Accordion.prototype.shrink = function () {
+            this.isClosing = true;
+            this.el.classList.remove('acc-open');
+            var startHeight = this.el.offsetHeight + 'px';
+            var endHeight = this.summary.offsetHeight + 'px';
+            if (this.animation) this.animation.cancel();
+            this.animation = this.el.animate(
+                { height: [startHeight, endHeight] },
+                { duration: 180, easing: 'ease-out' }
+            );
+            var self = this;
+            this.animation.onfinish = function () { self.onAnimationFinish(false); };
+            this.animation.oncancel = function () { self.isClosing = false; };
+        };
+        Accordion.prototype.open = function () {
+            this.el.style.height = this.el.offsetHeight + 'px';
+            this.el.open = true;
+            this.el.classList.add('acc-open');
+            var self = this;
+            window.requestAnimationFrame(function () { self.expand(); });
+        };
+        Accordion.prototype.expand = function () {
+            this.isExpanding = true;
+            var startHeight = this.el.offsetHeight + 'px';
+            var endHeight = (this.summary.offsetHeight + this.content.offsetHeight) + 'px';
+            if (this.animation) this.animation.cancel();
+            this.animation = this.el.animate(
+                { height: [startHeight, endHeight] },
+                { duration: 180, easing: 'ease-out' }
+            );
+            var self = this;
+            this.animation.onfinish = function () { self.onAnimationFinish(true); };
+            this.animation.oncancel = function () { self.isExpanding = false; };
+        };
+        Accordion.prototype.onAnimationFinish = function (open) {
+            this.el.open = open;
+            this.animation = null;
+            this.isClosing = false;
+            this.isExpanding = false;
+            this.el.style.height = '';
+            this.el.style.overflow = '';
+        };
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('details').forEach(function (el) { new Accordion(el); });
+            initTocNavigation();
+        });
+
+        /* TOC entries (Op and Function level) link to #op-N / #func-N-M anchors,
+           which are the <details> elements
+           themselves. Rather than rely on the
+           browser's native "auto-open closed <details> on fragment navigation"
+           behavior — which triggered the chevron desync bug above and proved
+           unreliable to script/test consistently — this takes over TOC clicks
+           entirely: walk the target's <details> ancestor chain outermost-first,
+           open each one that's closed via its Accordion (staggered so a parent
+           is already expanding before its child measures its own height), then
+           smooth-scroll to the target once everything above it has opened. */
+        function initTocNavigation() {
+            document.querySelectorAll('nav.toc a[href^="#"]').forEach(function (a) {
+                a.addEventListener('click', function (e) {
+                    var id = a.getAttribute('href').slice(1);
+                    var target = document.getElementById(id);
+                    if (!target) return;
+                    e.preventDefault();
+                    revealAndScrollTo(target, id);
+                });
+            });
+        }
+        function revealAndScrollTo(target, id) {
+            var chain = [];
+            var node = target.matches('details') ? target : target.closest('details');
+            while (node) {
+                chain.unshift(node);
+                node = node.parentElement ? node.parentElement.closest('details') : null;
+            }
+            var STAGGER_MS = 200;
+            var delay = 0;
+            chain.forEach(function (d) {
+                if (d.open) return;
+                var acc = d._accordion;
+                (function (d, acc, delay) {
+                    setTimeout(function () {
+                        if (acc) { acc.open(); } else { d.open = true; }
+                    }, delay);
+                })(d, acc, delay);
+                delay += STAGGER_MS;
+            });
+            setTimeout(function () {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                if (history.pushState) history.pushState(null, '', '#' + id);
+            }, delay + STAGGER_MS);
+        }
+    </script>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 14mm 12mm;
+        }
+
+        body {
+            background: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000000;
+            margin: 0 auto;
+            padding: 0 14px;
+            max-width: 1100px;
+        }
+
+        .header-band {
+            border-bottom: 3px solid #2d3fe0;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 26px;
+            margin: 0;
+            color: #10102a;
+            font-weight: 800;
+            display: inline;
+        }
+
+        .version {
+            font-size: 12px;
+            color: #999999;
+            font-weight: 600;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #555555;
+            margin-top: 2px;
+        }
+
+        .note {
+            font-size: 11px;
+            color: #2d3fe0;
+            font-weight: bold;
+            margin: 4px 0 0 0;
+        }
+
+        .op-intro {
+            font-size: 10.5px;
+            color: #555555;
+            line-height: 1.5;
+            margin: 2px 0 10px 18px;
+        }
+
+        details {
+            margin: 0;
+        }
+
+        summary {
+            cursor: pointer;
+            list-style: none;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::before {
+            content: "▶";
+            display: inline-block;
+            font-size: 8px;
+            width: 12px;
+            color: #999999;
+            transition: transform 0.18s ease-out;
+        }
+
+        details.acc-open>summary::before {
+            transform: rotate(90deg);
+        }
+
+        .eaops-group {
+            margin-top: 12px;
+            padding: 10px 14px 16px;
+            background: #f2f2f2;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+        }
+
+        .eaops-group h2 {
+            font-size: 12px;
+            margin: 0 0 6px 0;
+            color: #10102a;
+            letter-spacing: 0.4px;
+        }
+
+        details.op {
+            margin-left: 18px;
+            margin-top: 14px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #dddddd;
+        }
+
+        summary.op-sum {
+            font-size: 15px;
+            font-weight: 800;
+            color: #10102a;
+            padding-bottom: 3px;
+        }
+
+        summary.op-sum .id {
+            color: #999999;
+            font-weight: 700;
+            margin: 0 8px 0 4px;
+        }
+
+        details.function {
+            margin-left: 18px;
+            margin-top: 8px;
+        }
+
+        summary.function-sum {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2d3fe0;
+            letter-spacing: 0.2px;
+        }
+
+        summary.function-sum .id {
+            color: #9aa6f5;
+            font-weight: 700;
+            margin: 0 8px 0 4px;
+        }
+
+        details.parameter {
+            margin-left: 36px;
+            margin-top: 7px;
+        }
+
+        summary.parameter-sum {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #000000;
+        }
+
+        summary.parameter-sum .id {
+            color: #aaaaaa;
+            font-weight: 600;
+            margin: 0 8px 0 4px;
+        }
+
+        .desc-line {
+            margin-left: 54px;
+            font-size: 10.3px;
+            line-height: 1.5;
+            margin-top: 2px;
+        }
+
+        .desc-line .id {
+            font-weight: 700;
+            margin-right: 6px;
+            white-space: nowrap;
+        }
+
+        .desc-line.azure {
+            color: #333333;
+        }
+
+        .desc-line.azure .id {
+            color: #10102a;
+        }
+
+        .desc-line.gcp {
+            color: #1a73e8;
+        }
+
+        .desc-line.gcp .id {
+            color: #1a73e8;
+        }
+
+        .desc-line.aws {
+            color: #a15c00;
+        }
+
+        .desc-line.aws .id {
+            color: #a15c00;
+        }
+
+        .desc-line.oss {
+            color: #1f6b2e;
+        }
+
+        .desc-line.oss .id {
+            color: #1f6b2e;
+        }
+
+        .footer-line {
+            font-size: 8.5px;
+            color: #888888;
+            margin-top: 24px;
+            border-top: 1px solid #eeeeee;
+            padding-top: 6px;
+        }
+
+        .disclaimer {
+            font-size: 9px;
+            color: #999999;
+            margin-top: 6px;
+        }
+
+        nav.toc {
+            margin-top: 12px;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            padding: 10px 14px;
+            background: #f7f8fd;
+            page-break-after: always;
+        }
+
+        nav.toc h2 {
+            font-size: 12px;
+            margin: 0 0 6px 0;
+            color: #10102a;
+            letter-spacing: 0.4px;
+        }
+
+        nav.toc ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav.toc>ul>li {
+            margin-top: 6px;
+        }
+
+        nav.toc ul ul {
+            margin: 3px 0 0 0;
+            padding-left: 20px;
+        }
+
+        nav.toc ul ul li {
+            margin-top: 2px;
+        }
+
+        nav.toc a {
+            text-decoration: none;
+            font-size: 11px;
+            color: #10102a;
+            font-weight: 700;
+        }
+
+        nav.toc ul ul a {
+            font-size: 10px;
+            color: #2d3fe0;
+            font-weight: 600;
+        }
+
+        nav.toc a:hover {
+            text-decoration: underline;
+        }
+
+        nav.toc a .id {
+            color: #999999;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        .block-diagram {
+            margin-top: 12px;
+            padding: 10px 14px 16px;
+            background: #f2f2f2;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            page-break-after: always;
+        }
+
+        .block-diagram h2 {
+            font-size: 12px;
+            margin: 0 0 10px 0;
+            color: #10102a;
+            letter-spacing: 0.4px;
+        }
+
+        .block-diagram img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            background: #ffffff;
+        }
+
+        .eaops-intro {
+            margin-top: 12px;
+            margin-bottom: 20px;
+            page-break-after: always;
+        }
+
+        .eaops-intro h2 {
+            font-size: 12px;
+            margin: 0 0 10px 0;
+            color: #10102a;
+            letter-spacing: 0.4px;
+        }
+
+        .eaops-intro p {
+            font-size: 11px;
+            color: #333333;
+            line-height: 1.6;
+            margin: 0 0 10px 0;
+        }
+
+        .eaops-intro strong {
+            color: #10102a;
+        }
+
+        /* When forced open for print (see ?print=1 script above), hide the
+     disclosure triangles — a static document has nothing to click. */
+        @media print {
+            summary::before {
+                content: "" !important;
+                width: 0;
+            }
+
+            .back-to-top {
+                display: none !important;
+            }
+        }
+
+        .back-to-top {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #2d3fe0;
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 42px;
+            text-align: center;
+            padding: 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(8px);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+            z-index: 1000;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            background: #2333b0;
+        }
+
+        /* Base sizes above are tuned for a dense A4 print/PDF layout.
+           On an actual screen those are too small to read comfortably,
+           and print rules (e.g. @page) don't apply there anyway — so
+           bump everything up for on-screen viewing only. Chrome's
+           --print-to-pdf renders under print media and ignores this
+           block, so the PDF output is unaffected. */
+        @media screen {
+            body {
+                font-size: 15px;
+                line-height: 1.5;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .version {
+                font-size: 15px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .note {
+                font-size: 14px;
+            }
+
+            .op-intro {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+
+            summary.op-sum {
+                font-size: 20px;
+            }
+
+            summary.function-sum {
+                font-size: 17px;
+            }
+
+            summary.parameter-sum {
+                font-size: 15px;
+            }
+
+            .desc-line {
+                font-size: 14.5px;
+                line-height: 1.6;
+            }
+
+            .footer-line {
+                font-size: 12px;
+            }
+
+            .disclaimer {
+                font-size: 12px;
+                line-height: 1.5;
+            }
+
+            nav.toc h2,
+            .block-diagram h2,
+            .eaops-group h2,
+            .eaops-intro h2 {
+                font-size: 16px;
+            }
+
+            nav.toc a {
+                font-size: 14.5px;
+            }
+
+            nav.toc ul ul a {
+                font-size: 13.5px;
+            }
+
+            .eaops-intro p {
+                font-size: 15px;
+                line-height: 1.65;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header-band">
+        <h1>eaOps</h1><span class="version">v{{VERSION}}</span>
+        <div class="subtitle">Multi-Cloud|AI-native enterprise architecture operations (eaOps) — for both product
+            delivery and service engagements.</div>
+    </div>
+
+    <div class="eaops-intro">
+        <p><strong>eaOps</strong> (Multi-Cloud|AI-native Enterprise Architecture Operations) is a reference checklist
+            for the capabilities an enterprise architect needs to plan for, grounded throughout in a single hypothetical
+            use case — <strong>Customer, Products &amp; Orders (CPO)</strong> — so every item has a concrete example
+            behind it rather than staying abstract.</p>
+        <p>The document's own structure is {{OP_COUNT}} <strong>Ops</strong>, each broken into <strong>Functions</strong>, each
+            broken into <strong>Parameters</strong> — every Parameter carrying four parallel descriptions (Azure, GCP,
+            AWS, open-source) so the same capability is never tied to one vendor.</p>
+    </div>
+
+    {{TOC}}
+
+    <div class="block-diagram">
+        <h2>Block Diagram Of eaOps</h2>
+        <img src="eaOps.png"
+            alt="{{DIAGRAM_ALT}}">
+    </div>
+
+    <div class="eaops-group" id="eaops-group">
+        <h2>Top {{OP_COUNT}} eaOps</h2>
+
+        {{OPS}}
+    </div>
+
+    <div class="footer-line">Suresh Banda | Last Updated: {{UPDATED}}</div>
+
+    <p class="disclaimer">Disclaimer: This document is provided for educational and informational purposes only. It is a
+        reference checklist illustrating enterprise architecture concepts using a hypothetical Customer, Products &amp;
+        Orders (CPO) use case, and is not intended for dev/qa/staging/production/others-if-any use, as professional or
+        legal advice, or as a
+        substitute for independent architectural, security, or compliance review. No warranty, express or implied, is
+        made as to the accuracy, completeness, or suitability of this content for any purpose. Use at your own risk; the
+        author assumes no liability or legal consequences arising from its use, misuse, or reliance upon it. Any
+        terminology, names, or concepts borrowed from other industries, disciplines, or third parties, including any
+        that may be proprietary, trademarked, or otherwise protected, are used solely by way of analogy or general
+        reference; no affiliation with, endorsement by, or claim of ownership over any such term or its owner is
+        intended or implied, and the author assumes no liability or legal consequences arising from such use.</p>
+
+    <button type="button" class="back-to-top" aria-label="Back to top" title="Back to top">&#8593;</button>
+    <script>
+        (function () {
+            var btn = document.querySelector('.back-to-top');
+            if (!btn) return;
+            var SHOW_AFTER_PX = 400;
+            window.addEventListener('scroll', function () {
+                btn.classList.toggle('visible', window.scrollY > SHOW_AFTER_PX);
+            }, { passive: true });
+            btn.addEventListener('click', function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        })();
+    </script>
+
+</body>
+
+</html>
